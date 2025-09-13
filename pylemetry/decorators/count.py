@@ -9,7 +9,7 @@ from pylemetry.meters import Counter
 def count(f: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(f)
     def wrapper() -> Any:
-        counter_name = f.__name__ + "_calls"
+        counter_name = f.__qualname__
 
         counter = Registry().get_counter(counter_name)
 
