@@ -19,6 +19,7 @@ jobs:
   lint:
     name: Lint & Types
     needs: [configure-uv]
+    runs-on: ubuntu-latest
 
     steps:
       - uses: astral-sh/ruff-action@v3
@@ -29,6 +30,7 @@ jobs:
   test:
     name: Unit Tests
     needs: [configure-uv]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Run pytest
