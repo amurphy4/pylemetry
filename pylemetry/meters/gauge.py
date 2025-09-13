@@ -5,6 +5,9 @@ class Gauge:
     def get_value(self) -> float:
         return self.value
 
+    def set_value(self, value: float):
+        self.value = value
+
     def add(self, value: float) -> None:
         self.value += value
 

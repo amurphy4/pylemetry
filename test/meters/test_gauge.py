@@ -10,6 +10,15 @@ def test_gauge_starts_at_0() -> None:
 
 
 @pytest.mark.parametrize("value", [1, 2, 3, 1.5, 2.5, 3.5, 10, 20, 30])
+def test_gauge_set_value(value: float) -> None:
+    gauge = Gauge()
+
+    gauge.set_value(value)
+
+    assert gauge.get_value() == value
+
+
+@pytest.mark.parametrize("value", [1, 2, 3, 1.5, 2.5, 3.5, 10, 20, 30])
 def test_gauge_add(value: float) -> None:
     gauge = Gauge()
 
