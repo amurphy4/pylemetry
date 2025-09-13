@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v5
+
       - uses: ./.github/actions/configure-uv
 
       - uses: astral-sh/ruff-action@v3
@@ -20,7 +22,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v5
+
       - uses: ./.github/actions/configure-uv
-      
+
       - name: Run pytest
         run: uv run pytest
