@@ -1,0 +1,49 @@
+[project]
+name = "pylemetry"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "mypy==1.18.1",
+    "pytest==8.4.2",
+    "pytest-cov==7.0.0",
+    "ruff==0.13.0",
+]
+test = []
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+extend-select = ["E501"]
+
+[tool.pytest.ini_options]
+addopts = "--cov=pylemetry --cov-report=html"
+testpaths = [
+    "test"
+]
+pythonpath = [
+    "."
+]
+
+[tool.tox]
+env_list = ["3.13", "3.12", "3.11", "3.10", "3.9", "type", "lint"]
+
+[tool.tox.env_run_base]
+description = "Run tests in Python {base_python}"
+runner = "uv-venv-lock-runner"
+commands = [["pytest"]]
+
+[tool.tox.env.type]
+description = "Run static type checking"
+runner = "uv-venv-lock-runner"
+commands = [["mypy", "pylemetry"], ["mypy", "test"]]
+
+[tool.tox.env.lint]
+description = "Run lint checks"
+runner = "uv-venv-lock-runner"
+commands = [["ruff", "check"]]
