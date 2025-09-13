@@ -11,7 +11,7 @@ def mock_function() -> str:
 
 
 def test_count_decorator_creates_counter_in_registry() -> None:
-    counter_name = "mock_function_calls"
+    counter_name = "mock_function"
 
     assert Registry().get_counter(counter_name) is None
 
@@ -25,7 +25,7 @@ def test_count_decorator_creates_counter_in_registry() -> None:
 
 @pytest.mark.parametrize("call_count", [1, 2, 3, 10, 20, 30, 100, 200, 300])
 def test_count_decorator_updates_existing_counter(call_count: int) -> None:
-    counter_name = "mock_function_calls"
+    counter_name = "mock_function"
 
     assert Registry().get_counter(counter_name) is None
 
