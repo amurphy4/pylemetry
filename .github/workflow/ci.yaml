@@ -1,0 +1,35 @@
+name: Test and Build
+
+on: ["push"]
+
+jobs:
+  configure-uv:
+    name: Configure uv
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install dependencies
+        run: uv sync --locked --dev
+
+  lint:
+    name: Lint & Types
+    needs: [configure-uv]
+
+    steps:
+      - uses: astral-sh/ruff-action@v3
+
+      - name: Type Checks
+        run: uv run mypy pylemetry test
+
+  test:
+    name: Unit Tests
+    needs: [configure-uv]
+
+    steps:
+      - name: Run pytest
+        run: uv run pytest
