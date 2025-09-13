@@ -8,12 +8,24 @@ dependencies = []
 
 [dependency-groups]
 dev = [
+    "hatchling>=1.27.0",
     "mypy==1.18.1",
     "pytest==8.4.2",
     "pytest-cov==7.0.0",
     "ruff==0.13.0",
 ]
 test = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pylemetry"]
+
+[tool.mypy]
+mypy_path = "./src"
+explicit_package_bases = true
 
 [tool.ruff]
 line-length = 120
@@ -41,7 +53,7 @@ commands = [["pytest"]]
 [tool.tox.env.type]
 description = "Run static type checking"
 runner = "uv-venv-lock-runner"
-commands = [["mypy", "pylemetry"], ["mypy", "test"]]
+commands = [["mypy", "src"], ["mypy", "test"]]
 
 [tool.tox.env.lint]
 description = "Run lint checks"
