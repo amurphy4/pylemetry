@@ -32,7 +32,7 @@ def test_add_counter_already_exists() -> None:
         new_counter = Counter()
 
         Registry().add_counter(counter_name, new_counter)
-        
+
     assert exec_info.value.args[0] == f"A counter with the name '{counter_name}' already exists"
 
 

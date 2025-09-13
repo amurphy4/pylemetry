@@ -4,7 +4,6 @@ from pylemetry.meters import Counter
 
 
 class SingletonMeta(type):
-
     _instances: dict[type, object] = {}
     _lock = Lock()
 
@@ -18,7 +17,6 @@ class SingletonMeta(type):
 
 
 class Registry(metaclass=SingletonMeta):
-
     def __init__(self):
         self.counters = {}
 
