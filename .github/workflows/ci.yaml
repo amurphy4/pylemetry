@@ -26,5 +26,5 @@ jobs:
 
       - uses: ./.github/actions/configure-uv
 
-      - name: Run pytest
-        run: uv run pytest
+      - name: Run tests with Tox
+        run: tox

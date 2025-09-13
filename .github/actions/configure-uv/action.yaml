@@ -8,3 +8,7 @@ runs:
     - name: Install dependencies
       run: uv sync --locked --dev
       shell: bash
+
+    - name: Install tox
+      run: uv tool install tox --with tox-uv
+      shell: bash
