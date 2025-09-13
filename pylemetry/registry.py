@@ -1,6 +1,6 @@
 from threading import Lock
 
-from pylemetry.meters import Counter
+from pylemetry.meters import Counter, Gauge
 
 
 class SingletonMeta(type):
@@ -19,9 +19,11 @@ class SingletonMeta(type):
 class Registry(metaclass=SingletonMeta):
     def __init__(self):
         self.counters = {}
+        self.gauges = {}
 
     def clear(self) -> None:
         self.counters = {}
+        self.gauges = {}
 
     def add_counter(self, name: str, counter: Counter) -> None:
         if name in self.counters:
@@ -35,3 +37,16 @@ class Registry(metaclass=SingletonMeta):
     def remove_counter(self, name: str) -> None:
         if name in self.counters:
             del self.counters[name]
+
+    def add_gauge(self, name: str, gauge: Gauge) -> None:
+        if name in self.gauges:
+            raise AttributeError(f"A gauge with the name '{name}' already exists")
+
+        self.gauges[name] = gauge
+
+    def get_gauge(self, name: str) -> Gauge:
+        return self.gauges.get(name)
+
+    def remove_gauge(self, name: str) -> None:
+        if name in self.gauges:
+            del self.gauges[name]
