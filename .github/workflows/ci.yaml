@@ -30,6 +30,7 @@ jobs:
         run: tox
 
   deployment:
+    name: Build & Publish
     runs-on: ubuntu-latest
     environment: test
     needs: [lint, test]
