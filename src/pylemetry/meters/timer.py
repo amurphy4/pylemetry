@@ -12,11 +12,21 @@ class Timer:
         self.ticks = []
 
     def tick(self, tick: float) -> None:
+        """
+        Add a value to the list of ticks within this timer
+
+        :param tick: Value to add to the ticks list
+        """
+
         with self.lock:
             self.ticks.append(tick)
 
     @contextmanager
     def time(self) -> Generator[None, None, None]:
+        """
+        Context manager to time a code block and add the result to the internal ticks list
+        """
+
         start_time = time.perf_counter()
 
         try:
@@ -27,7 +37,19 @@ class Timer:
             self.tick(end_time - start_time)
 
     def get_count(self) -> int:
+        """
+        Get the count of the number of ticks within this timer
+
+        :return: Number of ticks
+        """
+
         return len(self.ticks)
 
     def get_mean_tick_time(self) -> float:
+        """
+        Get the mean tick time from the list of ticks within this timer
+
+        :return: Mean tick time
+        """
+
         return sum(self.ticks) / len(self.ticks)
