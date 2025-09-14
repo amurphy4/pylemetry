@@ -1,5 +1,12 @@
 # Pylemetry
 
+[![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![image](https://img.shields.io/pypi/v/pylemetry.svg)](https://pypi.python.org/pypi/pylemetry)
+[![image](https://img.shields.io/pypi/l/pylemetry.svg)](https://pypi.python.org/pypi/pylemetry)
+[![image](https://img.shields.io/pypi/pyversions/pylemetry.svg)](https://pypi.python.org/pypi/pylemetry)
+[![Release](https://github.com/amurphy4/pylemetry/actions/workflows/release.yaml/badge.svg?branch=main)](https://github.com/amurphy4/pylemetry/actions/workflows/release.yaml)
+
 Add metrics to your Python applications with Pylemetry
 
 Currently, three meters are supported, `Counter`, `Gauge`, and `Timer`
@@ -73,7 +80,7 @@ gauge.get_value()  # 11.5
 
 gauge.subtract(10)
 gauge -= 8.5
-gauge.get_value()  # -7.5
+gauge.get_value()  # -8
 
 gauge.set_value(7.5)
 gauge.get_value()  # 7.5
