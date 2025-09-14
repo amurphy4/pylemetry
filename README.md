@@ -12,6 +12,7 @@ A `Counter` can be created either directly
 ```python
 from pylemetry.meters import Counter
 
+
 def some_method() -> None:
     counter = Counter()
 
@@ -51,6 +52,7 @@ A `Gauge` meter allows you to keep track of varying metrics, e.g. memory usage o
 from pylemetry import Registry
 from pylemetry.meters import Gauge
 
+
 def some_method() -> None:
     gauge = Gauge()
     
@@ -61,6 +63,7 @@ The `Gauge` supports incrementing, decrementing, and setting a value directly
 
 ```python
 from pylemetry import Registry
+
 
 gauge = Registry().get_gauge("sample_gauge")
 
@@ -83,6 +86,7 @@ A `Timer` meter allows for tracking the time taken for a block of code. This can
 ```python
 from pylemetry.meters import Timer
 
+
 def some_method() -> None:
     timer = Timer()
 
@@ -100,9 +104,11 @@ or via a decorator
 from pylemetry import Registry
 from pylemetry.decorators import time
 
+
 @time
 def some_method() -> None:
     ...
+
 
 def main() -> None:
     for _ in range(100):
@@ -121,6 +127,7 @@ This registry is also used to keep track of all metrics created by decorators, w
 ```python
 from pylemetry import Registry
 from pylemetry.meters import Counter, Gauge, Timer
+
 
 counter = Counter()
 gauge = Gauge()
