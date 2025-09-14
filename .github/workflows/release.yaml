@@ -52,7 +52,12 @@ jobs:
           PYPI_TOKEN: ${{ secrets.pypi_token }}
         run: uv publish --index test-pypi --dry-run --token $PYPI_TOKEN
 
-      - name: echo version
-        run: echo $VERSION
+      - name: GitHub Release
+        uses: actions/create-release@latest
         env:
-          VERSION: ${{ steps.version.outputs.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          release_name: ${{ steps.version.outputs.version }}
+          draft: true
+          prerelease: true
