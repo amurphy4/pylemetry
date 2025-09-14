@@ -52,19 +52,19 @@ jobs:
       - name: Build
         run: uv build
 
-      - name: Publish to PyPI
-        env:
-          PYPI_TOKEN: ${{ secrets.pypi_token }}
-        run: uv publish --index pypi --token $PYPI_TOKEN
-
-      - name: GitHub Release
-        uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag: ${{ steps.version.outputs.version }}
-          name: ${{ steps.version.outputs.version }}
-          artifacts: "dist/pylemetry-*.tar.gz,dist/pylemetry-*.whl"
+#      - name: Publish to PyPI
+#        env:
+#          PYPI_TOKEN: ${{ secrets.pypi_token }}
+#        run: uv publish --index pypi --token $PYPI_TOKEN
+#
+#      - name: GitHub Release
+#        uses: ncipollo/release-action@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#        with:
+#          tag: ${{ steps.version.outputs.version }}
+#          name: ${{ steps.version.outputs.version }}
+#          artifacts: "dist/pylemetry-*.tar.gz,dist/pylemetry-*.whl"
 
       - name: Bump Version
         run: uv version --bump patch --bump alpha
@@ -73,3 +73,5 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           message: "Bump project version following release"
+          author_name: Alex Murphy
+          author_email: alex@weaverslodge.co.uk
