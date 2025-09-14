@@ -42,7 +42,7 @@ jobs:
 
       - name: Get version from uv
         id: version
-        run: echo "::set-output name=version::$(uv version --short)"
+        run: echo "version=$(uv version --short)" >> $GITHUB_OUTPUT
 
       - name: Build
         run: uv build
