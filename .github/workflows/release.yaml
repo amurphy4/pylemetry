@@ -32,7 +32,7 @@ jobs:
   publish:
     name: Build & Publish
     runs-on: ubuntu-latest
-    environment: release
+    environment: test
     needs: [lint, test]
 
     steps:
@@ -50,7 +50,7 @@ jobs:
       - name: Publish to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.pypi_token }}
-        run: uv publish --index pypi --dry-run --token $PYPI_TOKEN
+        run: uv publish --index test-pypi --dry-run --token $PYPI_TOKEN
 
       - name: echo version
         run: echo $VERSION
