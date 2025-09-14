@@ -1,13 +1,9 @@
-name: Test, Build, and Publish
+name: Release
 
 on:
   push:
     branches:
-      - develop
-  pull_request:
-    branches:
       - main
-      - develop
 
 jobs:
   lint:
@@ -39,13 +35,19 @@ jobs:
   publish:
     name: Build & Publish
     runs-on: ubuntu-latest
-    environment: test
+    environment: release
     needs: [lint, test]
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v5
 
       - uses: ./.github/actions/configure-uv
+
+      - name: Get version from uv
+        id: version
+        run: echo "version=$(uv version --short)" >> $GITHUB_OUTPUT
 
       - name: Build
         run: uv build
@@ -53,4 +55,21 @@ jobs:
       - name: Publish to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.pypi_token }}
-        run: uv publish --index test-pypi --dry-run --token $PYPI_TOKEN
+        run: uv publish --index pypi --token $PYPI_TOKEN
+
+      - name: GitHub Release
+        uses: ncipollo/release-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
+          artifacts: "dist/pylemetry-*.tar.gz,dist/pylemetry-*.whl"
+
+      - name: Bump Version
+        run: uv version --bump patch --bump alpha
+
+      - name: Commit Version Bump
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: "Bump project version following release"
