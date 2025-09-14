@@ -59,3 +59,13 @@ commands = [["mypy", "src"], ["mypy", "test"]]
 description = "Run lint checks"
 runner = "uv-venv-lock-runner"
 commands = [["ruff", "check"]]
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+publish-url = "https://upload.pypi.org/legacy/"
+
+[[tool.uv.index]]
+name = "test-pypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
