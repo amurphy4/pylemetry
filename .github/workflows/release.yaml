@@ -53,11 +53,12 @@ jobs:
         run: uv publish --index test-pypi --dry-run --token $PYPI_TOKEN
 
       - name: GitHub Release
-        uses: actions/create-release@latest
+        uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.version.outputs.version }}
           release_name: ${{ steps.version.outputs.version }}
+          artifacts: "dist/pylemetry-*.tar.gz,dist/pylemetry-*.whl"
           draft: true
           prerelease: true
