@@ -1,6 +1,12 @@
 name: Test, Build, and Publish
 
-on: ["push"]
+on:
+  push:
+    branches:
+      - deploy
+  pull_request:
+    branches:
+      - deploy
 
 jobs:
   lint:
