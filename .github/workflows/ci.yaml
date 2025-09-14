@@ -46,4 +46,4 @@ jobs:
       - name: Publish to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.pypi_token }}
-        run: uv publish --index test-pypi --dry-run --token $PYPI_TOKEN
+        run: uv publish --index test-pypi --token $PYPI_TOKEN
