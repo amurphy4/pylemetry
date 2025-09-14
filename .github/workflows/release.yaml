@@ -64,3 +64,12 @@ jobs:
           artifacts: "dist/pylemetry-*.tar.gz,dist/pylemetry-*.whl"
           draft: true
           prerelease: true
+
+      - name: Bump Version
+        run: uv version --bump patch --bump alpha
+
+      - name: Commit Version Bump
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: "pyproject.toml"
+          message: "Bump project version following release"
