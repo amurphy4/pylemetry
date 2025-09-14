@@ -1,4 +1,4 @@
-from typing import Callable, Any
+from typing import Callable, Any, Optional
 
 from functools import wraps
 
@@ -6,27 +6,30 @@ from pylemetry import Registry
 from pylemetry.meters import Counter
 
 
-def count(f: Callable[..., Any]) -> Callable[..., Any]:
+def count(name: Optional[str] = None) -> Callable[..., Any]:
     """
     Decorator to count the number of invocations of a given callable. Creates a Counter meter in the Registry
-    with the fully qualified name of the callable object as the metric name.
+    with either the provided name or the fully qualified name of the callable object as the metric name.
 
-    :param f: Callable to wrap
-    :return: Result of f
+    :param name: Name of the meter to create, if None the function name is used
+    :return: Result of the wrapped function
     """
 
-    @wraps(f)
-    def wrapper() -> Any:
-        counter_name = f.__qualname__
+    def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
+        @wraps(f)
+        def wrapper() -> Any:
+            counter_name = f.__qualname__ if name is None else name
 
-        counter = Registry().get_counter(counter_name)
+            counter = Registry().get_counter(counter_name)
 
-        if not counter:
-            counter = Counter()
-            Registry().add_counter(counter_name, counter)
+            if not counter:
+                counter = Counter()
+                Registry().add_counter(counter_name, counter)
 
-        counter += 1
+            counter += 1
 
-        return f()
+            return f()
 
-    return wrapper
+        return wrapper
+
+    return decorator

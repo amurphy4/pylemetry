@@ -75,5 +75,4 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           message: "Bump project version following release [skip ci]"
-          author_name: Alex Murphy
-          author_email: alex@weaverslodge.co.uk
+          default_author: github_actions
