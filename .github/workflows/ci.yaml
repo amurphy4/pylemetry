@@ -3,10 +3,10 @@ name: Test, Build, and Publish
 on:
   push:
     branches:
-      - deploy
+      - develop
   pull_request:
     branches:
-      - deploy
+      - develop
 
 jobs:
   lint:
