@@ -1,6 +1,9 @@
 name: Release
 
-on: ["push"]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   lint:
@@ -32,7 +35,7 @@ jobs:
   publish:
     name: Build & Publish
     runs-on: ubuntu-latest
-    environment: test
+    environment: release
     needs: [lint, test]
     permissions:
       contents: write
@@ -52,7 +55,7 @@ jobs:
       - name: Publish to PyPI
         env:
           PYPI_TOKEN: ${{ secrets.pypi_token }}
-        run: uv publish --index test-pypi --dry-run --token $PYPI_TOKEN
+        run: uv publish --index pypi --token $PYPI_TOKEN
 
       - name: GitHub Release
         uses: ncipollo/release-action@v1
@@ -62,8 +65,6 @@ jobs:
           tag: ${{ steps.version.outputs.version }}
           name: ${{ steps.version.outputs.version }}
           artifacts: "dist/pylemetry-*.tar.gz,dist/pylemetry-*.whl"
-          draft: true
-          prerelease: true
 
       - name: Bump Version
         run: uv version --bump patch --bump alpha
