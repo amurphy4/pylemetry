@@ -5,7 +5,7 @@ from pylemetry.decorators import time
 from pylemetry.meters import Timer
 
 
-@time
+@time()
 def mock_function() -> str:
     return "A function decorated with the timer decorator"
 
@@ -38,3 +38,13 @@ def test_count_decorator_updates_existing_counter(call_count: int) -> None:
     assert isinstance(timer, Timer)
     assert timer.get_count() == call_count
     assert 0 < timer.get_mean_tick_time() < 0.05
+
+
+def test_time_decorator_with_name() -> None:
+    @time(name="test_timer_meter")
+    def mock() -> None:
+        print("Mock method")
+
+    mock()
+
+    assert "test_timer_meter" in Registry().timers

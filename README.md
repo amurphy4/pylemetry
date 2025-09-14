@@ -36,20 +36,29 @@ from pylemetry import Registry
 from pylemetry.decorators import count
 
 
-@count
+@count()
 def some_method() -> None:
+    ...
+
+
+@count("named_counter")
+def another_method() -> None:
     ...
 
 
 def main() -> None:
     for _ in range(100):
         some_method()
+        another_method()
 
     counter = Registry().get_counter("some_method")
     counter.get_count()  # 100
+
+    counter = Registry.get_counter("named_counter")
+    counter.get_count()  # 100
 ```
 
-When using this meter via a decorator, the meter gets added to the global `Registry`, with the method name it's decorating as the meter name
+When using this meter via a decorator, the meter gets added to the global `Registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
 
 ## Gauge
 
@@ -112,19 +121,33 @@ from pylemetry import Registry
 from pylemetry.decorators import time
 
 
-@time
+@time()
 def some_method() -> None:
+    ...
+
+
+@time("named_timer")
+def another_method() -> None:
     ...
 
 
 def main() -> None:
     for _ in range(100):
         some_method()
+        another_method()
         
     timer = Registry().get_timer("some_method")
     timer.get_count()  # 100
     timer.get_mean_tick_time()  # Mean execution time of the some_method function
+    timer.get_max_tick_time()  # Maximum execution time of the some_method function
+    timer.get_min_tick_time()  # Minimum execution time of the some_method function
+
+    timer = Registry().get_timer("named_timer")
+    timer.get_count()  # 100
+    ...
 ```
+
+When using this meter via a decorator, the meter gets added to the global `Registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
 
 ## The Registry
 

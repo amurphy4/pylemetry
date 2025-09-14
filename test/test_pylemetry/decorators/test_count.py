@@ -5,7 +5,7 @@ from pylemetry.decorators import count
 from pylemetry.meters import Counter
 
 
-@count
+@count()
 def mock_function() -> str:
     return "A function decorated with the count decorator"
 
@@ -36,3 +36,13 @@ def test_count_decorator_updates_existing_counter(call_count: int) -> None:
 
     assert isinstance(counter, Counter)
     assert counter.get_count() == call_count
+
+
+def test_count_decorator_with_name() -> None:
+    @count(name="test_count_meter")
+    def mock() -> None:
+        print("Mock method")
+
+    mock()
+
+    assert "test_count_meter" in Registry().counters

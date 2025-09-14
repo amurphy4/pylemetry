@@ -36,3 +36,19 @@ def test_get_mean_tick_time() -> None:
     timer.ticks = [1, 2, 3, 4, 5]
 
     assert timer.get_mean_tick_time() == 3
+
+
+def test_get_max_tick_time() -> None:
+    timer = Timer()
+
+    timer.ticks = [1, 2, 3, 4, 5]
+
+    assert timer.get_max_tick_time() == 5
+
+
+def test_get_min_tick_time() -> None:
+    timer = Timer()
+
+    timer.ticks = [1, 2, 3, 4, 5]
+
+    assert timer.get_min_tick_time() == 1
