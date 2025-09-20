@@ -85,6 +85,6 @@ jobs:
           new_branch: ${{ steps.bump_version.outputs.branch_name }}
 
       - name: Raise Pull Request
-        run: gh pr create -B develop -H ${{ steps.bump_version.outputs.branch_name }} --title 'Update version to v$(uv version --short)' --body 'Created by GitHub Actions in the Release pipeline'
+        run: gh pr create -B develop -H ${{ steps.bump_version.outputs.branch_name }} --title "Update version to v$(uv version --short)" --body 'Created by GitHub Actions in the Release pipeline'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
