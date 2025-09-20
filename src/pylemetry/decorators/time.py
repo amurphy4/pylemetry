@@ -2,7 +2,7 @@ from typing import Callable, Any, Optional
 
 from functools import wraps
 
-from pylemetry import Registry
+from pylemetry import registry
 from pylemetry.meters import Timer
 
 
@@ -20,11 +20,11 @@ def time(name: Optional[str] = None) -> Callable[..., Any]:
         def wrapper() -> Any:
             time_name = f.__qualname__ if name is None else name
 
-            _timer = Registry().get_timer(time_name)
+            _timer = registry.get_timer(time_name)
 
             if not _timer:
                 _timer = Timer()
-                Registry().add_timer(time_name, _timer)
+                registry.add_timer(time_name, _timer)
 
             with _timer.time():
                 return f()

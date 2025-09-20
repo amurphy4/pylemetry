@@ -1,6 +1,6 @@
 import pytest
 
-from pylemetry import Registry
+from pylemetry import registry
 from pylemetry.decorators import time
 from pylemetry.meters import Timer
 
@@ -13,11 +13,11 @@ def mock_function() -> str:
 def test_timer_decorator_creates_counter_in_registry() -> None:
     timer_name = "mock_function"
 
-    assert Registry().get_timer(timer_name) is None
+    assert registry.get_timer(timer_name) is None
 
     mock_function()
 
-    timer = Registry().get_timer(timer_name)
+    timer = registry.get_timer(timer_name)
 
     assert isinstance(timer, Timer)
     assert timer.get_count() == 1
@@ -28,12 +28,12 @@ def test_timer_decorator_creates_counter_in_registry() -> None:
 def test_count_decorator_updates_existing_counter(call_count: int) -> None:
     timer_name = "mock_function"
 
-    assert Registry().get_timer(timer_name) is None
+    assert registry.get_timer(timer_name) is None
 
     for _ in range(call_count):
         mock_function()
 
-    timer = Registry().get_timer(timer_name)
+    timer = registry.get_timer(timer_name)
 
     assert isinstance(timer, Timer)
     assert timer.get_count() == call_count
@@ -47,4 +47,4 @@ def test_time_decorator_with_name() -> None:
 
     mock()
 
-    assert "test_timer_meter" in Registry().timers
+    assert "test_timer_meter" in registry.TIMERS

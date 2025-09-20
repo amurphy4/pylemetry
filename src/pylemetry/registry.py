@@ -1,137 +1,132 @@
-from threading import Lock
+from typing import Optional
 
 from pylemetry.meters import Counter, Gauge, Timer
 
 
-class SingletonMeta(type):
-    _instances: dict[type, object] = {}
-    _lock = Lock()
-
-    def __call__(cls, *args, **kwargs):
-        with cls._lock:
-            if cls not in cls._instances:
-                instance = super().__call__(*args, **kwargs)
-                cls._instances[cls] = instance
-
-        return cls._instances[cls]
+COUNTERS: dict[str, Counter] = {}
+GAUGES: dict[str, Gauge] = {}
+TIMERS: dict[str, Timer] = {}
 
 
-class Registry(metaclass=SingletonMeta):
-    def __init__(self):
-        self.counters = {}
-        self.gauges = {}
-        self.timers = {}
+def clear() -> None:
+    """
+    Remove all meters from the global registry
+    """
 
-    def clear(self) -> None:
-        """
-        Remove all meters from the global registry
-        """
+    COUNTERS.clear()
+    GAUGES.clear()
+    TIMERS.clear()
 
-        self.counters = {}
-        self.gauges = {}
-        self.timers = {}
 
-    def add_counter(self, name: str, counter: Counter) -> None:
-        """
-        Add a counter to the global registry
+def add_counter(name: str, counter: Counter) -> None:
+    """
+    Add a counter to the global registry
 
-        :param name: Unique name of the counter
-        :param counter: Counter to add
+    :param name: Unique name of the counter
+    :param counter: Counter to add
 
-        :raises AttributeError: When the name provided for the counter metric is already in use in the global registry
-        """
+    :raises AttributeError: When the name provided for the counter metric is already in use in the global registry
+    """
 
-        if name in self.counters:
-            raise AttributeError(f"A counter with the name '{name}' already exists")
+    if name in COUNTERS:
+        raise AttributeError(f"A counter with the name '{name}' already exists")
 
-        self.counters[name] = counter
+    COUNTERS[name] = counter
 
-    def get_counter(self, name: str) -> Counter:
-        """
-        Get a counter from the global registry by its name
 
-        :param name: Name of the counter
-        :return: Counter in the global registry
-        """
+def get_counter(name: str) -> Optional[Counter]:
+    """
+    Get a counter from the global registry by its name
 
-        return self.counters.get(name)
+    :param name: Name of the counter
+    :return: Counter in the global registry
+    """
 
-    def remove_counter(self, name: str) -> None:
-        """
-        Remove a counter from the global registry
+    return COUNTERS.get(name)
 
-        :param name: Name of the counter to remove
-        """
 
-        if name in self.counters:
-            del self.counters[name]
+def remove_counter(name: str) -> None:
+    """
+    Remove a counter from the global registry
 
-    def add_gauge(self, name: str, gauge: Gauge) -> None:
-        """
-        Add a gauge to the global registry
+    :param name: Name of the counter to remove
+    """
 
-        :param name: Unique name of the gauge
-        :param gauge: Gauge to add
+    if name in COUNTERS:
+        del COUNTERS[name]
 
-        :raises AttributeError: When the name provided for the gauge metric is already in use in the global registry
-        """
 
-        if name in self.gauges:
-            raise AttributeError(f"A gauge with the name '{name}' already exists")
+def add_gauge(name: str, gauge: Gauge) -> None:
+    """
+    Add a gauge to the global registry
 
-        self.gauges[name] = gauge
+    :param name: Unique name of the gauge
+    :param gauge: Gauge to add
 
-    def get_gauge(self, name: str) -> Gauge:
-        """
-        Get a gauge from the global registry by its name
+    :raises AttributeError: When the name provided for the gauge metric is already in use in the global registry
+    """
 
-        :param name: Name of the gauge
-        :return: Gauge in the global registry
-        """
+    if name in GAUGES:
+        raise AttributeError(f"A gauge with the name '{name}' already exists")
 
-        return self.gauges.get(name)
+    GAUGES[name] = gauge
 
-    def remove_gauge(self, name: str) -> None:
-        """
-        Remove a gauge from the global registry
 
-        :param name: Name of the gauge to remove
-        """
+def get_gauge(name: str) -> Optional[Gauge]:
+    """
+    Get a gauge from the global registry by its name
 
-        if name in self.gauges:
-            del self.gauges[name]
+    :param name: Name of the gauge
+    :return: Gauge in the global registry
+    """
 
-    def add_timer(self, name: str, timer: Timer) -> None:
-        """
-        Add a timer to the global registry
+    return GAUGES.get(name)
 
-        :param name: Unique name of the timer
-        :param timer: Timer to add
 
-        :raises AttributeError: When the name provided for the timer metric is already in use in the global registry
-        """
+def remove_gauge(name: str) -> None:
+    """
+    Remove a gauge from the global registry
 
-        if name in self.timers:
-            raise AttributeError(f"A timer with the name '{name}' already exists")
+    :param name: Name of the gauge to remove
+    """
 
-        self.timers[name] = timer
+    if name in GAUGES:
+        del GAUGES[name]
 
-    def get_timer(self, name: str) -> Timer:
-        """
-        Get a timer from the global registry by its name
 
-        :param name: Name of the timer
-        :return: Timer in the global registry
-        """
+def add_timer(name: str, timer: Timer) -> None:
+    """
+    Add a timer to the global registry
 
-        return self.timers.get(name)
+    :param name: Unique name of the timer
+    :param timer: Timer to add
 
-    def remove_timer(self, name: str) -> None:
-        """
-        Remove a timer from the global registry
+    :raises AttributeError: When the name provided for the timer metric is already in use in the global registry
+    """
 
-        :param name: Name of the timer to remove
-        """
+    if name in TIMERS:
+        raise AttributeError(f"A timer with the name '{name}' already exists")
 
-        if name in self.timers:
-            del self.timers[name]
+    TIMERS[name] = timer
+
+
+def get_timer(name: str) -> Optional[Timer]:
+    """
+    Get a timer from the global registry by its name
+
+    :param name: Name of the timer
+    :return: Timer in the global registry
+    """
+
+    return TIMERS.get(name)
+
+
+def remove_timer(name: str) -> None:
+    """
+    Remove a timer from the global registry
+
+    :param name: Name of the timer to remove
+    """
+
+    if name in TIMERS:
+        del TIMERS[name]
