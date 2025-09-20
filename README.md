@@ -32,7 +32,7 @@ def some_method() -> None:
 or via a decorator
 
 ```python
-from pylemetry import Registry
+from pylemetry import registry
 from pylemetry.decorators import count
 
 
@@ -51,37 +51,37 @@ def main() -> None:
         some_method()
         another_method()
 
-    counter = Registry().get_counter("some_method")
+    counter = registry.get_counter("some_method")
     counter.get_count()  # 100
 
-    counter = Registry.get_counter("named_counter")
+    counter = registry.get_counter("named_counter")
     counter.get_count()  # 100
 ```
 
-When using this meter via a decorator, the meter gets added to the global `Registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
+When using this meter via a decorator, the meter gets added to the global `registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
 
 ## Gauge
 
 A `Gauge` meter allows you to keep track of varying metrics, e.g. memory usage or items on a queue. This meter currently isn't supported as a decorator
 
 ```python
-from pylemetry import Registry
+from pylemetry import registry
 from pylemetry.meters import Gauge
 
 
 def some_method() -> None:
     gauge = Gauge()
     
-    Registry().add_gauge("sample_gauge", gauge)
+    registry.add_gauge("sample_gauge", gauge)
 ```
 
 The `Gauge` supports incrementing, decrementing, and setting a value directly
 
 ```python
-from pylemetry import Registry
+from pylemetry import registry
 
 
-gauge = Registry().get_gauge("sample_gauge")
+gauge = registry.get_gauge("sample_gauge")
 
 gauge.add(10)
 gauge += 1.5
@@ -89,7 +89,7 @@ gauge.get_value()  # 11.5
 
 gauge.subtract(10)
 gauge -= 8.5
-gauge.get_value()  # -8
+gauge.get_value()  # -7
 
 gauge.set_value(7.5)
 gauge.get_value()  # 7.5
@@ -117,7 +117,7 @@ def some_method() -> None:
 or via a decorator
 
 ```python
-from pylemetry import Registry
+from pylemetry import registry
 from pylemetry.decorators import time
 
 
@@ -136,18 +136,18 @@ def main() -> None:
         some_method()
         another_method()
         
-    timer = Registry().get_timer("some_method")
+    timer = registry.get_timer("some_method")
     timer.get_count()  # 100
     timer.get_mean_tick_time()  # Mean execution time of the some_method function
     timer.get_max_tick_time()  # Maximum execution time of the some_method function
     timer.get_min_tick_time()  # Minimum execution time of the some_method function
 
-    timer = Registry().get_timer("named_timer")
+    timer = registry.get_timer("named_timer")
     timer.get_count()  # 100
     ...
 ```
 
-When using this meter via a decorator, the meter gets added to the global `Registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
+When using this meter via a decorator, the meter gets added to the global `registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
 
 ## The Registry
 
@@ -155,7 +155,7 @@ Pylemetry maintains a global registry of meters, allowing you to share a meter a
 This registry is also used to keep track of all metrics created by decorators, with those meters registered using the method name they are decorating
 
 ```python
-from pylemetry import Registry
+from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, Timer
 
 
@@ -163,11 +163,11 @@ counter = Counter()
 gauge = Gauge()
 timer = Timer()
 
-Registry().add_counter("example", counter)
-Registry().add_gauge("example", gauge)
-Registry().add_timer("example", timer)
+registry.add_counter("example", counter)
+registry.add_gauge("example", gauge)
+registry.add_timer("example", timer)
 ```
 
-Each meter type has an `add_meter`, `get_meter` and `remove_meter` method to manage meters in the `Registry`, each requiring a unique meter name.
+Each meter type has an `add_meter`, `get_meter` and `remove_meter` method to manage meters in the `registry`, each requiring a unique meter name.
 
-The `Registry` can be cleared through the `clear()` method
+The `registry` can be cleared through the `clear()` method
