@@ -73,7 +73,7 @@ jobs:
         id: bump_version
         run: |
           uv version --bump patch --bump alpha
-          echo "branch_name=bump_version_${uv version --short}" >> $GITHUB_OUTPUT
+          echo "branch_name=bump_version_$(uv version --short)" >> $GITHUB_OUTPUT
 
       - name: Commit Version Bump
         uses: EndBug/add-and-commit@v9
