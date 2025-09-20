@@ -1,37 +1,30 @@
 import pytest
 
-from pylemetry import Registry
+from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, Timer
-
-
-def test_registry_singleton() -> None:
-    registry = Registry()
-    second_registry = Registry()
-
-    assert registry == second_registry
 
 
 def test_add_counter() -> None:
     counter = Counter()
     counter_name = "test_counter"
 
-    Registry().add_counter(counter_name, counter)
+    registry.add_counter(counter_name, counter)
 
-    assert len(Registry().counters) == 1
-    assert counter_name in Registry().counters
-    assert Registry().counters[counter_name] == counter
+    assert len(registry.COUNTERS) == 1
+    assert counter_name in registry.COUNTERS
+    assert registry.COUNTERS[counter_name] == counter
 
 
 def test_add_counter_already_exists() -> None:
     counter = Counter()
     counter_name = "test_counter"
 
-    Registry().add_counter(counter_name, counter)
+    registry.add_counter(counter_name, counter)
 
     with pytest.raises(AttributeError) as exec_info:
         new_counter = Counter()
 
-        Registry().add_counter(counter_name, new_counter)
+        registry.add_counter(counter_name, new_counter)
 
     assert exec_info.value.args[0] == f"A counter with the name '{counter_name}' already exists"
 
@@ -40,9 +33,9 @@ def test_get_counter() -> None:
     counter = Counter()
     counter_name = "test_counter"
 
-    Registry().add_counter(counter_name, counter)
+    registry.add_counter(counter_name, counter)
 
-    new_counter = Registry().get_counter(counter_name)
+    new_counter = registry.get_counter(counter_name)
 
     assert new_counter == counter
 
@@ -51,37 +44,37 @@ def test_remove_counter() -> None:
     counter = Counter()
     counter_name = "test_counter"
 
-    Registry().add_counter(counter_name, counter)
+    registry.add_counter(counter_name, counter)
 
-    assert counter_name in Registry().counters
+    assert counter_name in registry.COUNTERS
 
-    Registry().remove_counter(counter_name)
+    registry.remove_counter(counter_name)
 
-    assert len(Registry().counters) == 0
-    assert counter_name not in Registry().counters
+    assert len(registry.COUNTERS) == 0
+    assert counter_name not in registry.COUNTERS
 
 
 def test_add_gauge() -> None:
     gauge = Gauge()
     gauge_name = "test_gauge"
 
-    Registry().add_gauge(gauge_name, gauge)
+    registry.add_gauge(gauge_name, gauge)
 
-    assert len(Registry().gauges) == 1
-    assert gauge_name in Registry().gauges
-    assert Registry().gauges[gauge_name] == gauge
+    assert len(registry.GAUGES) == 1
+    assert gauge_name in registry.GAUGES
+    assert registry.GAUGES[gauge_name] == gauge
 
 
 def test_add_gauge_already_exists() -> None:
     gauge = Gauge()
     gauge_name = "test_gauge"
 
-    Registry().add_gauge(gauge_name, gauge)
+    registry.add_gauge(gauge_name, gauge)
 
     with pytest.raises(AttributeError) as exec_info:
         new_gauge = Gauge()
 
-        Registry().add_gauge(gauge_name, new_gauge)
+        registry.add_gauge(gauge_name, new_gauge)
 
     assert exec_info.value.args[0] == f"A gauge with the name '{gauge_name}' already exists"
 
@@ -90,9 +83,9 @@ def test_get_gauge() -> None:
     gauge = Gauge()
     gauge_name = "test_gauge"
 
-    Registry().add_gauge(gauge_name, gauge)
+    registry.add_gauge(gauge_name, gauge)
 
-    new_gauge = Registry().get_gauge(gauge_name)
+    new_gauge = registry.get_gauge(gauge_name)
 
     assert new_gauge == gauge
 
@@ -101,37 +94,37 @@ def test_remove_gauge() -> None:
     gauge = Gauge()
     gauge_name = "test_gauge"
 
-    Registry().add_gauge(gauge_name, gauge)
+    registry.add_gauge(gauge_name, gauge)
 
-    assert gauge_name in Registry().gauges
+    assert gauge_name in registry.GAUGES
 
-    Registry().remove_gauge(gauge_name)
+    registry.remove_gauge(gauge_name)
 
-    assert len(Registry().gauges) == 0
-    assert gauge_name not in Registry().gauges
+    assert len(registry.GAUGES) == 0
+    assert gauge_name not in registry.GAUGES
 
 
 def test_add_timer() -> None:
     timer = Timer()
     timer_name = "test_timer"
 
-    Registry().add_timer(timer_name, timer)
+    registry.add_timer(timer_name, timer)
 
-    assert len(Registry().timers) == 1
-    assert timer_name in Registry().timers
-    assert Registry().timers[timer_name] == timer
+    assert len(registry.TIMERS) == 1
+    assert timer_name in registry.TIMERS
+    assert registry.TIMERS[timer_name] == timer
 
 
 def test_add_timer_already_exists() -> None:
     timer = Timer()
     timer_name = "test_timer"
 
-    Registry().add_timer(timer_name, timer)
+    registry.add_timer(timer_name, timer)
 
     with pytest.raises(AttributeError) as exec_info:
         new_timer = Timer()
 
-        Registry().add_timer(timer_name, new_timer)
+        registry.add_timer(timer_name, new_timer)
 
     assert exec_info.value.args[0] == f"A timer with the name '{timer_name}' already exists"
 
@@ -140,9 +133,9 @@ def test_get_timer() -> None:
     timer = Timer()
     timer_name = "test_timer"
 
-    Registry().add_timer(timer_name, timer)
+    registry.add_timer(timer_name, timer)
 
-    new_timer = Registry().get_timer(timer_name)
+    new_timer = registry.get_timer(timer_name)
 
     assert new_timer == timer
 
@@ -151,14 +144,14 @@ def test_remove_timer() -> None:
     timer = Timer()
     timer_name = "test_timer"
 
-    Registry().add_timer(timer_name, timer)
+    registry.add_timer(timer_name, timer)
 
-    assert timer_name in Registry().timers
+    assert timer_name in registry.TIMERS
 
-    Registry().remove_timer(timer_name)
+    registry.remove_timer(timer_name)
 
-    assert len(Registry().timers) == 0
-    assert timer_name not in Registry().timers
+    assert len(registry.TIMERS) == 0
+    assert timer_name not in registry.TIMERS
 
 
 def test_clear_registry() -> None:
@@ -171,20 +164,20 @@ def test_clear_registry() -> None:
     timer = Timer()
     timer_name = "test_timer"
 
-    Registry().add_counter(counter_name, counter)
-    Registry().add_gauge(gauge_name, gauge)
-    Registry().add_timer(timer_name, timer)
+    registry.add_counter(counter_name, counter)
+    registry.add_gauge(gauge_name, gauge)
+    registry.add_timer(timer_name, timer)
 
-    assert counter_name in Registry().counters
-    assert gauge_name in Registry().gauges
-    assert timer_name in Registry().timers
+    assert counter_name in registry.COUNTERS
+    assert gauge_name in registry.GAUGES
+    assert timer_name in registry.TIMERS
 
-    Registry().clear()
+    registry.clear()
 
-    assert len(Registry().counters) == 0
-    assert len(Registry().gauges) == 0
-    assert len(Registry().timers) == 0
+    assert len(registry.COUNTERS) == 0
+    assert len(registry.GAUGES) == 0
+    assert len(registry.TIMERS) == 0
 
-    assert counter_name not in Registry().counters
-    assert gauge_name not in Registry().gauges
-    assert timer_name not in Registry().timers
+    assert counter_name not in registry.COUNTERS
+    assert gauge_name not in registry.GAUGES
+    assert timer_name not in registry.TIMERS

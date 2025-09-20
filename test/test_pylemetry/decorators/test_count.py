@@ -1,6 +1,6 @@
 import pytest
 
-from pylemetry import Registry
+from pylemetry import registry
 from pylemetry.decorators import count
 from pylemetry.meters import Counter
 
@@ -13,11 +13,11 @@ def mock_function() -> str:
 def test_count_decorator_creates_counter_in_registry() -> None:
     counter_name = "mock_function"
 
-    assert Registry().get_counter(counter_name) is None
+    assert registry.get_counter(counter_name) is None
 
     mock_function()
 
-    counter = Registry().get_counter(counter_name)
+    counter = registry.get_counter(counter_name)
 
     assert isinstance(counter, Counter)
     assert counter.get_count() == 1
@@ -27,12 +27,12 @@ def test_count_decorator_creates_counter_in_registry() -> None:
 def test_count_decorator_updates_existing_counter(call_count: int) -> None:
     counter_name = "mock_function"
 
-    assert Registry().get_counter(counter_name) is None
+    assert registry.get_counter(counter_name) is None
 
     for _ in range(call_count):
         mock_function()
 
-    counter = Registry().get_counter(counter_name)
+    counter = registry.get_counter(counter_name)
 
     assert isinstance(counter, Counter)
     assert counter.get_count() == call_count
@@ -45,4 +45,4 @@ def test_count_decorator_with_name() -> None:
 
     mock()
 
-    assert "test_count_meter" in Registry().counters
+    assert "test_count_meter" in registry.COUNTERS

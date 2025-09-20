@@ -2,7 +2,7 @@ from typing import Callable, Any, Optional
 
 from functools import wraps
 
-from pylemetry import Registry
+from pylemetry import registry
 from pylemetry.meters import Counter
 
 
@@ -20,11 +20,11 @@ def count(name: Optional[str] = None) -> Callable[..., Any]:
         def wrapper() -> Any:
             counter_name = f.__qualname__ if name is None else name
 
-            counter = Registry().get_counter(counter_name)
+            counter = registry.get_counter(counter_name)
 
             if not counter:
                 counter = Counter()
-                Registry().add_counter(counter_name, counter)
+                registry.add_counter(counter_name, counter)
 
             counter += 1
 
