@@ -246,7 +246,7 @@ wheels = [
 
 [[package]]
 name = "pylemetry"
-version = "0.1.5"
+version = "0.1.6a1"
 source = { editable = "." }
 
 [package.dev-dependencies]
