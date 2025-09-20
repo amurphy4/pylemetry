@@ -39,6 +39,7 @@ jobs:
     needs: [lint, test]
     permissions:
       contents: write
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v5
@@ -71,8 +72,18 @@ jobs:
       - name: Bump Version
         run: uv version --bump patch --bump alpha
 
+      - name: Get New Version Branch Name
+        id: bump_version
+        run: echo "branch_name=feature/bump_version_$(uv version --short)" >> $GITHUB_OUTPUT
+
       - name: Commit Version Bump
         uses: EndBug/add-and-commit@v9
         with:
-          message: "Bump project version following release [skip ci]"
+          message: "Bump project version following release"
           default_author: github_actions
+          new_branch: ${{ steps.bump_version.outputs.branch_name }}
+
+      - name: Raise Pull Request
+        run: gh pr create -B develop -H ${{ steps.bump_version.outputs.branch_name }} --title "Update version to v$(uv version --short)" --body 'Created by GitHub Actions in the Release pipeline'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
