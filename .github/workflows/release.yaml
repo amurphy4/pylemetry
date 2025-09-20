@@ -77,7 +77,7 @@ jobs:
         run: echo "branch_name=bump_version_$(uv version --short)" >> $GITHUB_OUTPUT
 
       - name: Check branch name
-        run: ${{ steps.bump_version.output.branch_name }}
+        run: ${{ steps.bump_version.outputs.branch_name }}
 
 #      - name: Commit Version Bump
 #        uses: EndBug/add-and-commit@v9
