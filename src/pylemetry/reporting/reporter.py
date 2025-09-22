@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import Optional, Union
 
 import threading
+
+from pylemetry.meters import Counter, Gauge, Timer
 
 
 class Reporter:
@@ -29,3 +31,36 @@ class Reporter:
 
         self.flush()
         self.running = False
+
+    @staticmethod
+    def format_message(
+        message_format: str, meter_name: str, meter: Union[Counter, Gauge, Timer], since_last_interval: bool = False
+    ) -> str:
+        if isinstance(meter, Counter):
+            message = message_format.format(
+                name=meter_name,
+                value=meter.get_count(since_last_interval),
+                min=meter.get_count(since_last_interval),
+                max=meter.get_count(since_last_interval),
+                avg=meter.get_count(since_last_interval),
+            )
+        elif isinstance(meter, Gauge):
+            message = message_format.format(
+                name=meter_name,
+                value=meter.get_value(since_last_interval),
+                min=meter.get_value(since_last_interval),
+                max=meter.get_value(since_last_interval),
+                avg=meter.get_value(since_last_interval),
+            )
+        elif isinstance(meter, Timer):
+            message = message_format.format(
+                name=meter_name,
+                value=meter.get_count(since_last_interval),
+                min=meter.get_min_tick_time(since_last_interval),
+                max=meter.get_max_tick_time(since_last_interval),
+                avg=meter.get_mean_tick_time(since_last_interval),
+            )
+        else:
+            raise ValueError(f"Unsupported meter of type {type(meter)}")
+
+        return message
