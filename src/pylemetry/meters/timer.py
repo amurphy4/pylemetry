@@ -10,6 +10,7 @@ class Timer:
     def __init__(self):
         self.lock = Lock()
         self.ticks = []
+        self.last_interval_tick_count = 0
 
     def tick(self, tick: float) -> None:
         """
@@ -36,38 +37,67 @@ class Timer:
 
             self.tick(end_time - start_time)
 
-    def get_count(self) -> int:
+    def get_count(self, since_last_interval: bool = False) -> int:
         """
         Get the count of the number of ticks within this timer
 
+        :param since_last_interval: If true, returns the value since the last marked interval, otherwise returns the
+        full value
         :return: Number of ticks
         """
 
-        return len(self.ticks)
+        ticks = self.get_ticks_since_last_interval() if since_last_interval else self.ticks
 
-    def get_mean_tick_time(self) -> float:
+        return len(ticks)
+
+    def get_mean_tick_time(self, since_last_interval: bool = False) -> float:
         """
         Get the mean tick time from the list of ticks within this timer
 
+        :param since_last_interval: If true, returns the value since the last marked interval, otherwise returns the
+        full value
         :return: Mean tick time
         """
 
-        return sum(self.ticks) / len(self.ticks)
+        ticks = self.get_ticks_since_last_interval() if since_last_interval else self.ticks
 
-    def get_max_tick_time(self) -> float:
+        return sum(ticks) / len(ticks)
+
+    def get_max_tick_time(self, since_last_interval: bool = False) -> float:
         """
         Get the maximum tick time from the list of ticks within this timer
 
+        :param since_last_interval: If true, returns the value since the last marked interval, otherwise returns the
+        full value
         :return: Maximum tick time
         """
 
-        return max(self.ticks)
+        ticks = self.get_ticks_since_last_interval() if since_last_interval else self.ticks
 
-    def get_min_tick_time(self) -> float:
+        return max(ticks)
+
+    def get_min_tick_time(self, since_last_interval: bool = False) -> float:
         """
         Get the minimum tick time from the list of ticks within this timer
 
+        :param since_last_interval: If true, returns the value since the last marked interval, otherwise returns the
+        full value
         :return: Minimum tick time
         """
 
-        return min(self.ticks)
+        ticks = self.get_ticks_since_last_interval() if since_last_interval else self.ticks
+
+        return min(ticks)
+
+    def get_ticks_since_last_interval(self) -> list[float]:
+        """
+        Get a list of the ticks since the most recent marked interval
+
+        :return: List of ticks since the most recent marked interval
+        """
+
+        return self.ticks[self.last_interval_tick_count :]
+
+    def mark_interval(self) -> None:
+        with self.lock:
+            self.last_interval_tick_count = len(self.ticks)

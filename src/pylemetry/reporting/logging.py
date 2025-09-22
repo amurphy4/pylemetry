@@ -1,4 +1,4 @@
-from typing import Protocol, ParamSpec, TypeVar, Union
+from typing import Protocol, ParamSpec, TypeVar
 
 from pylemetry import registry
 from pylemetry.reporting import Reporter, ReportingType
@@ -32,7 +32,9 @@ class LoggingReporter(Reporter):
         self.level = level
         self._type = _type
 
-        self.__values_at_interval: dict[str, dict[str, Union[int, float]]] = {}
-
     def flush(self) -> None:
-        self.sink.log(self.level, "Hello world!")
+        since_last_interval = self._type == ReportingType.INTERVAL
+
+        for meters in [registry.COUNTERS, registry.GAUGES, registry.TIMERS]:
+            for name, meter in meters.items():  # type: ignore
+                self.sink.log(self.level, self.format_message(self.message_format, name, meter, since_last_interval))

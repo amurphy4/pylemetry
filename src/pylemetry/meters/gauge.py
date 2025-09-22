@@ -5,15 +5,21 @@ class Gauge:
     def __init__(self):
         self.lock = Lock()
         self.value = 0.0
+        self.last_interval_value = 0.0
 
-    def get_value(self) -> float:
+    def get_value(self, since_last_interval: bool = False) -> float:
         """
         Get the value from this gauge
 
+        :param since_last_interval: If true, returns the value since the last marked interval, otherwise returns the
+        full value
         :return: Value within this gauge
         """
 
-        return self.value
+        if since_last_interval:
+            return self.value - self.last_interval_value
+        else:
+            return self.value
 
     def set_value(self, value: float):
         """
@@ -54,3 +60,7 @@ class Gauge:
         self.subtract(other)
 
         return self
+
+    def mark_interval(self) -> None:
+        with self.lock:
+            self.last_interval_value = self.value
