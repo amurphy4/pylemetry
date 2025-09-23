@@ -60,7 +60,8 @@ class Reporter:
         :param message_format: Message format string
         :param meter_name: Name of the meter to be output
         :param meter: Meter to be output
-        :param since_last_interval: If true, values since the last interval will be used. If false, the full value will be used
+        :param since_last_interval: If true, values since the last interval will be used. If false, the full value
+        will be used
         :return: Formatted output message containing meter values
         """
 
