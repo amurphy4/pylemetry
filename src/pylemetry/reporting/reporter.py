@@ -6,7 +6,7 @@ from pylemetry.meters import Counter, Gauge, Timer
 
 
 class Reporter:
-    def __init__(self, interval: int):
+    def __init__(self, interval: float):
         self.interval = interval
         self.__timer_thread: Optional[threading.Timer] = None
         self.running = False

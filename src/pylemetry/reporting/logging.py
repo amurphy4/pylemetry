@@ -1,7 +1,8 @@
 from typing import Protocol, ParamSpec, TypeVar
 
 from pylemetry import registry
-from pylemetry.reporting import Reporter, ReportingType
+from pylemetry.reporting.reporter import Reporter
+from pylemetry.reporting.reporting_type import ReportingType
 
 P = ParamSpec("P")
 R = TypeVar("R", covariant=True)
@@ -24,7 +25,7 @@ class Loggable(Protocol[P, R]):
 
 
 class LoggingReporter(Reporter):
-    def __init__(self, interval: int, message_format: str, logger: Loggable, level: int, _type: ReportingType):
+    def __init__(self, interval: float, message_format: str, logger: Loggable, level: int, _type: ReportingType):
         super().__init__(interval)
 
         self.message_format = message_format
@@ -38,3 +39,6 @@ class LoggingReporter(Reporter):
         for meters in [registry.COUNTERS, registry.GAUGES, registry.TIMERS]:
             for name, meter in meters.items():  # type: ignore
                 self.logger.log(self.level, self.format_message(self.message_format, name, meter, since_last_interval))
+
+                if since_last_interval:
+                    meter.mark_interval()
