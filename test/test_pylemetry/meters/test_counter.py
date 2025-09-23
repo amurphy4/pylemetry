@@ -30,3 +30,15 @@ def test_counter_dunder_add(value: int) -> None:
     counter += value
 
     assert counter.get_count() == value
+
+
+def test_counter_value_since_interval() -> None:
+    counter = Counter()
+    counter += 10
+
+    assert counter.get_count() == 10
+
+    counter.mark_interval()
+
+    assert counter.get_count() == 10
+    assert counter.get_count(since_last_interval=True) == 0
