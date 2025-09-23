@@ -12,6 +12,11 @@ class Reporter:
         self.running = False
 
     def flush(self) -> None:
+        """
+        Flush all meter values in the registry. If the reporter is configured using `ReporterType.INTERVAL`, this will
+        mark an interval each time it runs and only flush the meter values since the most recent interval
+        """
+
         raise NotImplementedError()
 
     def _run(self) -> None:
@@ -20,12 +25,20 @@ class Reporter:
         self.start()
 
     def start(self) -> None:
+        """
+        Start running a thread timer with the provided interval to flush the meters periodically
+        """
+
         if not self.running:
             self.__timer_thread = threading.Timer(self.interval, self._run)
             self.__timer_thread.start()
             self.running = True
 
     def stop(self) -> None:
+        """
+        Stop the thread timer and flush all meters for a final time
+        """
+
         if self.__timer_thread is not None:
             self.__timer_thread.cancel()
 
@@ -36,6 +49,21 @@ class Reporter:
     def format_message(
         message_format: str, meter_name: str, meter: Union[Counter, Gauge, Timer], since_last_interval: bool = False
     ) -> str:
+        """
+        Format output messages with the following format options:
+            - name: Name of the meter being logged
+            - value: Counter count, Gauge value, or Timer count
+            - min: Counter count, Gauge value, or Timer minimum tick value
+            - max: Counter count, Gauge value, or Timer maximum tick value
+            - avg: Counter count, Gauge value, or Timer mean tick value
+
+        :param message_format: Message format string
+        :param meter_name: Name of the meter to be output
+        :param meter: Meter to be output
+        :param since_last_interval: If true, values since the last interval will be used. If false, the full value will be used
+        :return: Formatted output message containing meter values
+        """
+
         if isinstance(meter, Counter):
             message = message_format.format(
                 name=meter_name,

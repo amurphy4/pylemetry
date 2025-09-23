@@ -62,5 +62,9 @@ class Gauge:
         return self
 
     def mark_interval(self) -> None:
+        """
+        Mark an interval and update the most recent interval value
+        """
+
         with self.lock:
             self.last_interval_value = self.value

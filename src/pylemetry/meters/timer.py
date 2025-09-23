@@ -108,5 +108,9 @@ class Timer:
         return self.ticks[self.last_interval_tick_count :]
 
     def mark_interval(self) -> None:
+        """
+        Mark an interval and update the most recent interval value
+        """
+
         with self.lock:
             self.last_interval_tick_count = len(self.ticks)
