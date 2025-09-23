@@ -52,3 +52,15 @@ def test_gauge_dunder_sub(value: float) -> None:
     gauge -= value
 
     assert gauge.get_value() == -value
+
+
+def test_gauge_value_since_interval() -> None:
+    gauge = Gauge()
+    gauge += 10
+
+    assert gauge.get_value() == 10
+
+    gauge.mark_interval()
+
+    assert gauge.get_value() == 10
+    assert gauge.get_value(since_last_interval=True) == 0

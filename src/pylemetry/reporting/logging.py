@@ -24,11 +24,11 @@ class Loggable(Protocol[P, R]):
 
 
 class LoggingReporter(Reporter):
-    def __init__(self, interval: int, message_format: str, sink: Loggable, level: int, _type: ReportingType):
+    def __init__(self, interval: int, message_format: str, logger: Loggable, level: int, _type: ReportingType):
         super().__init__(interval)
 
         self.message_format = message_format
-        self.sink = sink
+        self.logger = logger
         self.level = level
         self._type = _type
 
@@ -37,4 +37,4 @@ class LoggingReporter(Reporter):
 
         for meters in [registry.COUNTERS, registry.GAUGES, registry.TIMERS]:
             for name, meter in meters.items():  # type: ignore
-                self.sink.log(self.level, self.format_message(self.message_format, name, meter, since_last_interval))
+                self.logger.log(self.level, self.format_message(self.message_format, name, meter, since_last_interval))

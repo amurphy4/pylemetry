@@ -61,6 +61,9 @@ class Timer:
 
         ticks = self.get_ticks_since_last_interval() if since_last_interval else self.ticks
 
+        if len(ticks) == 0:
+            return 0
+
         return sum(ticks) / len(ticks)
 
     def get_max_tick_time(self, since_last_interval: bool = False) -> float:
@@ -74,6 +77,9 @@ class Timer:
 
         ticks = self.get_ticks_since_last_interval() if since_last_interval else self.ticks
 
+        if len(ticks) == 0:
+            return 0
+
         return max(ticks)
 
     def get_min_tick_time(self, since_last_interval: bool = False) -> float:
@@ -86,6 +92,9 @@ class Timer:
         """
 
         ticks = self.get_ticks_since_last_interval() if since_last_interval else self.ticks
+
+        if len(ticks) == 0:
+            return 0
 
         return min(ticks)
 
