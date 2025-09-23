@@ -52,3 +52,26 @@ def test_get_min_tick_time() -> None:
     timer.ticks = [1, 2, 3, 4, 5]
 
     assert timer.get_min_tick_time() == 1
+
+
+def test_get_timer_values_since_interval() -> None:
+    timer = Timer()
+
+    timer.ticks = [1, 2, 3, 4, 5]
+
+    assert timer.get_count() == 5
+    assert timer.get_min_tick_time() == 1
+    assert timer.get_mean_tick_time() == 3
+    assert timer.get_max_tick_time() == 5
+
+    timer.mark_interval()
+
+    assert timer.get_count() == 5
+    assert timer.get_min_tick_time() == 1
+    assert timer.get_mean_tick_time() == 3
+    assert timer.get_max_tick_time() == 5
+
+    assert timer.get_count(since_last_interval=True) == 0
+    assert timer.get_min_tick_time(since_last_interval=True) == 0
+    assert timer.get_mean_tick_time(since_last_interval=True) == 0
+    assert timer.get_max_tick_time(since_last_interval=True) == 0
