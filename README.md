@@ -182,7 +182,8 @@ The message format allows for substitutions for metric values with the following
 | Substitution Key | Effect                                                                                                                                       |
 |------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | name             | Name of the meter being logged                                                                                                               |
-| value            | Value of the meter, `count` for `Counter` and `Timer` meters, `value` for `Gauge` meters                                                     |
+| value            | Value of the meter, `value` for `Counter` and `Gauge` meters, sum of all ticks for `Timer` meters                                            |
+| count            | Value of the meter for `Counter` and `Gauge` meters, number of ticks for `Timer` meters                                                      |
 | min              | Minimum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `min_tick_time` for `Timer` metes       |
 | max              | Maximum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `max_tick_time` for `Timer` metes       |
 | avg              | Mean average value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `mean_tick_time` for `Timer` metes |

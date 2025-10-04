@@ -66,7 +66,8 @@ def test_message_format_gauge() -> None:
 
 def test_message_format_timer() -> None:
     message_format = (
-        "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}}}"
+        "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'count': {count}, 'min': {min}, "
+        "'max': {max}, 'average': {avg}}}"
     )
 
     timer = Timer()
@@ -74,7 +75,10 @@ def test_message_format_timer() -> None:
 
     message = Reporter.format_message(message_format, "test_timer", timer, False)
 
-    assert message == "{'name': 'test_timer', 'type': 'timer', 'value': 5, 'min': 1, 'max': 5, 'average': 3.0}"
+    assert (
+        message
+        == "{'name': 'test_timer', 'type': 'timer', 'value': 15, 'count': 5, 'min': 1, 'max': 5, 'average': 3.0}"
+    )
 
 
 def test_message_format_unsupported_meter() -> None:

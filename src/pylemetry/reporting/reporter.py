@@ -68,6 +68,7 @@ class Reporter:
             message = message_format.format(
                 name=meter_name,
                 value=meter.get_value(since_last_interval),
+                count=meter.get_count(since_last_interval),
                 min=meter.get_min_tick_time(since_last_interval),
                 max=meter.get_max_tick_time(since_last_interval),
                 avg=meter.get_mean_tick_time(since_last_interval),
@@ -77,6 +78,7 @@ class Reporter:
             message = message_format.format(
                 name=meter_name,
                 value=meter.get_value(since_last_interval),
+                count=meter.get_value(since_last_interval),
                 min=meter.get_value(since_last_interval),
                 max=meter.get_value(since_last_interval),
                 avg=meter.get_value(since_last_interval),

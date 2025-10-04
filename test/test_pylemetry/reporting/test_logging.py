@@ -44,7 +44,7 @@ def test_logging_default_message_formats(caplog) -> None:
 
     assert "test_counter [counter] -- 1" in caplog.text
     assert "test_gauge [gauge] -- 1" in caplog.text
-    assert "test_timer [timer] -- 5" in caplog.text
+    assert "test_timer [timer] -- 15" in caplog.text
 
 
 def test_logging_configure_message_format_all_meters(caplog) -> None:
@@ -70,7 +70,7 @@ def test_logging_configure_message_format_all_meters(caplog) -> None:
 
     assert "test_counter [counter] 1" in caplog.text
     assert "test_gauge [gauge] 1" in caplog.text
-    assert "test_timer [timer] 5" in caplog.text
+    assert "test_timer [timer] 15" in caplog.text
 
 
 def test_logging_configure_message_format_specific_meter_type(caplog) -> None:
@@ -96,7 +96,7 @@ def test_logging_configure_message_format_specific_meter_type(caplog) -> None:
 
     assert "test_counter [counter] 1" in caplog.text
     assert "test_gauge [gauge] -- 1" in caplog.text
-    assert "test_timer [timer] -- 5" in caplog.text
+    assert "test_timer [timer] -- 15" in caplog.text
 
 
 def test_logging_reporter_marks_meter_intervals() -> None:

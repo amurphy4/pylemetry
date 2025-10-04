@@ -40,6 +40,19 @@ class Timer(Meter):
 
     def get_value(self, since_last_interval: bool = False) -> int:
         """
+        Get the sum of all ticks within this timer
+
+        :param since_last_interval: If true, returns the sum of all ticks since the last marked interval, otherwise
+        returns the full value
+        :return: Sum of all ticks
+        """
+
+        ticks = self.get_ticks_since_last_interval() if since_last_interval else self.ticks
+
+        return sum(ticks)
+
+    def get_count(self, since_last_interval: bool = False) -> int:
+        """
         Get the count of the number of ticks within this timer
 
         :param since_last_interval: If true, returns the value since the last marked interval, otherwise returns the
