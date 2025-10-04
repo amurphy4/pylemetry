@@ -20,7 +20,7 @@ def test_timer_decorator_creates_counter_in_registry() -> None:
     timer = registry.get_timer(timer_name)
 
     assert isinstance(timer, Timer)
-    assert timer.get_count() == 1
+    assert timer.get_value() == 1
     assert 0 < timer.get_mean_tick_time() < 0.05
 
 
@@ -36,7 +36,7 @@ def test_count_decorator_updates_existing_counter(call_count: int) -> None:
     timer = registry.get_timer(timer_name)
 
     assert isinstance(timer, Timer)
-    assert timer.get_count() == call_count
+    assert timer.get_value() == call_count
     assert 0 < timer.get_mean_tick_time() < 0.05
 
 

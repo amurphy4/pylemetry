@@ -1,25 +1,9 @@
-from threading import Lock
+from pylemetry.meters.meter import Meter, MeterType
 
 
-class Counter:
+class Counter(Meter):
     def __init__(self):
-        self.lock = Lock()
-        self.count = 0
-        self.last_interval_count = 0
-
-    def get_count(self, since_last_interval: bool = False) -> int:
-        """
-        Get the count from this counter
-
-        :param since_last_interval: If true, returns the count since the last marked interval, otherwise returns the
-        full count
-        :return: Count from this counter
-        """
-
-        if since_last_interval:
-            return self.count - self.last_interval_count
-        else:
-            return self.count
+        super().__init__(MeterType.COUNTER)
 
     def add(self, value: int = 1) -> None:
         """
@@ -29,17 +13,9 @@ class Counter:
         """
 
         with self.lock:
-            self.count += value
+            self.value += value
 
     def __add__(self, other: int) -> "Counter":
         self.add(other)
 
         return self
-
-    def mark_interval(self) -> None:
-        """
-        Mark an interval and update the most recent interval value
-        """
-
-        with self.lock:
-            self.last_interval_count = self.count

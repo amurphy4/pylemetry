@@ -41,7 +41,7 @@ def test_message_format_counter() -> None:
 
     message = Reporter.format_message(message_format, "test_counter", counter, False)
 
-    assert message == "{'name': 'test_counter', 'value': 10, 'min': 10, 'max': 10, 'average': 10}"
+    assert message == "{'name': 'test_counter', 'value': 10.0, 'min': 10.0, 'max': 10.0, 'average': 10.0}"
 
 
 def test_message_format_gauge() -> None:

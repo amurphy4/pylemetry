@@ -32,8 +32,8 @@ def test_logging_reporter_marks_meter_intervals() -> None:
     registry_counter = registry.get_counter("test_counter")
 
     assert registry_counter is not None
-    assert registry_counter.get_count() == 1
-    assert registry_counter.get_count(since_last_interval=True) == 1
+    assert registry_counter.get_value() == 1
+    assert registry_counter.get_value(since_last_interval=True) == 1
 
     reporter = LoggingReporter(0.1, "", logger, logging.INFO, ReportingType.INTERVAL)
     reporter.start()
@@ -43,18 +43,18 @@ def test_logging_reporter_marks_meter_intervals() -> None:
     registry_counter = registry.get_counter("test_counter")
 
     assert registry_counter is not None
-    assert registry_counter.get_count() == 1
-    assert registry_counter.get_count(since_last_interval=True) == 0
+    assert registry_counter.get_value() == 1
+    assert registry_counter.get_value(since_last_interval=True) == 0
 
     registry_counter.add(1)
 
-    assert registry_counter.get_count() == 2
-    assert registry_counter.get_count(since_last_interval=True) == 1
+    assert registry_counter.get_value() == 2
+    assert registry_counter.get_value(since_last_interval=True) == 1
 
     reporter.stop()
 
     registry_counter = registry.get_counter("test_counter")
 
     assert registry_counter is not None
-    assert registry_counter.get_count() == 2
-    assert registry_counter.get_count(since_last_interval=True) == 0
+    assert registry_counter.get_value() == 2
+    assert registry_counter.get_value(since_last_interval=True) == 0
