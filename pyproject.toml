@@ -1,6 +1,6 @@
 [project]
 name = "pylemetry"
-version = "1.0.0"
+version = "1.1.0"
 description = "A Python metrics library"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -34,10 +34,12 @@ Issues = "https://github.com/amurphy4/pylemetry/issues"
 [dependency-groups]
 dev = [
     "hatchling>=1.27.0",
+    "logot[loguru]>=1.5.1",
+    "loguru>=0.7.3",
     "mypy==1.18.2",
     "pytest==8.4.2",
     "pytest-cov==7.0.0",
-    "ruff==0.13.1",
+    "ruff==0.13.3",
 ]
 
 [build-system]

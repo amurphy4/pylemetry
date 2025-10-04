@@ -3,14 +3,15 @@ from typing import Generator
 import time
 
 from contextlib import contextmanager
-from threading import Lock
+
+from pylemetry.meters.meter import Meter, MeterType
 
 
-class Timer:
+class Timer(Meter):
     def __init__(self):
-        self.lock = Lock()
+        super().__init__(MeterType.TIMER)
+
         self.ticks = []
-        self.last_interval_tick_count = 0
 
     def tick(self, tick: float) -> None:
         """
@@ -36,6 +37,19 @@ class Timer:
             end_time = time.perf_counter()
 
             self.tick(end_time - start_time)
+
+    def get_value(self, since_last_interval: bool = False) -> int:
+        """
+        Get the sum of all ticks within this timer
+
+        :param since_last_interval: If true, returns the sum of all ticks since the last marked interval, otherwise
+        returns the full value
+        :return: Sum of all ticks
+        """
+
+        ticks = self.get_ticks_since_last_interval() if since_last_interval else self.ticks
+
+        return sum(ticks)
 
     def get_count(self, since_last_interval: bool = False) -> int:
         """
@@ -105,7 +119,7 @@ class Timer:
         :return: List of ticks since the most recent marked interval
         """
 
-        return self.ticks[self.last_interval_tick_count :]
+        return self.ticks[int(self.last_interval_value) :]
 
     def mark_interval(self) -> None:
         """
@@ -113,4 +127,4 @@ class Timer:
         """
 
         with self.lock:
-            self.last_interval_tick_count = len(self.ticks)
+            self.last_interval_value = len(self.ticks)

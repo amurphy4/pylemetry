@@ -1,7 +1,7 @@
 import pytest
 
 from pylemetry import registry
-from pylemetry.meters import Counter, Gauge, Timer
+from pylemetry.meters import Counter, Gauge, Timer, MeterType
 
 
 def test_add_counter() -> None:
@@ -10,9 +10,9 @@ def test_add_counter() -> None:
 
     registry.add_counter(counter_name, counter)
 
-    assert len(registry.COUNTERS) == 1
-    assert counter_name in registry.COUNTERS
-    assert registry.COUNTERS[counter_name] == counter
+    assert len(registry.METERS[MeterType.COUNTER]) == 1
+    assert counter_name in registry.METERS[MeterType.COUNTER]
+    assert registry.METERS[MeterType.COUNTER][counter_name] == counter
 
 
 def test_add_counter_already_exists() -> None:
@@ -46,12 +46,12 @@ def test_remove_counter() -> None:
 
     registry.add_counter(counter_name, counter)
 
-    assert counter_name in registry.COUNTERS
+    assert counter_name in registry.METERS[MeterType.COUNTER]
 
     registry.remove_counter(counter_name)
 
-    assert len(registry.COUNTERS) == 0
-    assert counter_name not in registry.COUNTERS
+    assert len(registry.METERS[MeterType.COUNTER]) == 0
+    assert counter_name not in registry.METERS[MeterType.COUNTER]
 
 
 def test_add_gauge() -> None:
@@ -60,9 +60,9 @@ def test_add_gauge() -> None:
 
     registry.add_gauge(gauge_name, gauge)
 
-    assert len(registry.GAUGES) == 1
-    assert gauge_name in registry.GAUGES
-    assert registry.GAUGES[gauge_name] == gauge
+    assert len(registry.METERS[MeterType.GAUGE]) == 1
+    assert gauge_name in registry.METERS[MeterType.GAUGE]
+    assert registry.METERS[MeterType.GAUGE][gauge_name] == gauge
 
 
 def test_add_gauge_already_exists() -> None:
@@ -96,12 +96,12 @@ def test_remove_gauge() -> None:
 
     registry.add_gauge(gauge_name, gauge)
 
-    assert gauge_name in registry.GAUGES
+    assert gauge_name in registry.METERS[MeterType.GAUGE]
 
     registry.remove_gauge(gauge_name)
 
-    assert len(registry.GAUGES) == 0
-    assert gauge_name not in registry.GAUGES
+    assert len(registry.METERS[MeterType.GAUGE]) == 0
+    assert gauge_name not in registry.METERS[MeterType.GAUGE]
 
 
 def test_add_timer() -> None:
@@ -110,9 +110,9 @@ def test_add_timer() -> None:
 
     registry.add_timer(timer_name, timer)
 
-    assert len(registry.TIMERS) == 1
-    assert timer_name in registry.TIMERS
-    assert registry.TIMERS[timer_name] == timer
+    assert len(registry.METERS[MeterType.TIMER]) == 1
+    assert timer_name in registry.METERS[MeterType.TIMER]
+    assert registry.METERS[MeterType.TIMER][timer_name] == timer
 
 
 def test_add_timer_already_exists() -> None:
@@ -146,12 +146,12 @@ def test_remove_timer() -> None:
 
     registry.add_timer(timer_name, timer)
 
-    assert timer_name in registry.TIMERS
+    assert timer_name in registry.METERS[MeterType.TIMER]
 
     registry.remove_timer(timer_name)
 
-    assert len(registry.TIMERS) == 0
-    assert timer_name not in registry.TIMERS
+    assert len(registry.METERS[MeterType.TIMER]) == 0
+    assert timer_name not in registry.METERS[MeterType.TIMER]
 
 
 def test_clear_registry() -> None:
@@ -168,16 +168,16 @@ def test_clear_registry() -> None:
     registry.add_gauge(gauge_name, gauge)
     registry.add_timer(timer_name, timer)
 
-    assert counter_name in registry.COUNTERS
-    assert gauge_name in registry.GAUGES
-    assert timer_name in registry.TIMERS
+    assert counter_name in registry.METERS[MeterType.COUNTER]
+    assert gauge_name in registry.METERS[MeterType.GAUGE]
+    assert timer_name in registry.METERS[MeterType.TIMER]
 
     registry.clear()
 
-    assert len(registry.COUNTERS) == 0
-    assert len(registry.GAUGES) == 0
-    assert len(registry.TIMERS) == 0
+    assert len(registry.METERS[MeterType.COUNTER]) == 0
+    assert len(registry.METERS[MeterType.GAUGE]) == 0
+    assert len(registry.METERS[MeterType.TIMER]) == 0
 
-    assert counter_name not in registry.COUNTERS
-    assert gauge_name not in registry.GAUGES
-    assert timer_name not in registry.TIMERS
+    assert counter_name not in registry.METERS[MeterType.COUNTER]
+    assert gauge_name not in registry.METERS[MeterType.GAUGE]
+    assert timer_name not in registry.METERS[MeterType.TIMER]

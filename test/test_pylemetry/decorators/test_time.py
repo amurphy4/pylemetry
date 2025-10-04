@@ -2,7 +2,7 @@ import pytest
 
 from pylemetry import registry
 from pylemetry.decorators import time
-from pylemetry.meters import Timer
+from pylemetry.meters import Timer, MeterType
 
 
 @time()
@@ -21,6 +21,7 @@ def test_timer_decorator_creates_counter_in_registry() -> None:
 
     assert isinstance(timer, Timer)
     assert timer.get_count() == 1
+    assert 0 < timer.get_value() < 0.05
     assert 0 < timer.get_mean_tick_time() < 0.05
 
 
@@ -47,4 +48,4 @@ def test_time_decorator_with_name() -> None:
 
     mock()
 
-    assert "test_timer_meter" in registry.TIMERS
+    assert "test_timer_meter" in registry.METERS[MeterType.TIMER]
