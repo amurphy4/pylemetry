@@ -210,3 +210,6 @@ The Python built in `logging` logger conforms to this, as do several alternate l
 An additional parameter `ReportingType` is required to determine whether to log cumulatively, or per interval.
 When `ReportingType.CUMULATIVE` is provided then all logs for all meters will include values for the meter's entire lifespan. 
 If `ReportingType.INTERVAL` is provided, all meters will log only the changes in that meter since the most recent interval was marked, either manually or by the most recent log flush
+
+To configure message formats, use the `configure_message_formats` method, optionally providing a `MeterType` for the meters that this message format should apply to. 
+If no `MeterType` is provided, the message format will apply to all meters

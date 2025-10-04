@@ -23,7 +23,7 @@ def test_reporter_flushing_on_timer(caplog) -> None:
     registry.add_counter("test_counter", counter)
 
     with caplog.at_level(logging.INFO):
-        reporter = LoggingReporter(0.1, "Hello World!", logger, logging.INFO, ReportingType.CUMULATIVE)
+        reporter = LoggingReporter(0.1, logger, logging.INFO, ReportingType.CUMULATIVE)
         reporter.start()
 
         time.sleep(0.5)
