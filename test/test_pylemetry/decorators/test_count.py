@@ -2,7 +2,7 @@ import pytest
 
 from pylemetry import registry
 from pylemetry.decorators import count
-from pylemetry.meters import Counter
+from pylemetry.meters import Counter, MeterType
 
 
 @count()
@@ -45,4 +45,4 @@ def test_count_decorator_with_name() -> None:
 
     mock()
 
-    assert "test_count_meter" in registry.COUNTERS
+    assert "test_count_meter" in registry.METERS[MeterType.COUNTER]
