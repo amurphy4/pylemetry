@@ -1,8 +1,8 @@
-from typing import Optional, Union
+from typing import Optional
 
 import threading
 
-from pylemetry.meters import Counter, Gauge, Timer
+from pylemetry.meters import Counter, Gauge, Timer, Meter
 
 
 class Reporter:
@@ -46,16 +46,15 @@ class Reporter:
         self.running = False
 
     @staticmethod
-    def format_message(
-        message_format: str, meter_name: str, meter: Union[Counter, Gauge, Timer], since_last_interval: bool = False
-    ) -> str:
+    def format_message(message_format: str, meter_name: str, meter: Meter, since_last_interval: bool = False) -> str:
         """
         Format output messages with the following format options:
             - name: Name of the meter being logged
-            - value: Counter count, Gauge value, or Timer count
-            - min: Counter count, Gauge value, or Timer minimum tick value
-            - max: Counter count, Gauge value, or Timer maximum tick value
-            - avg: Counter count, Gauge value, or Timer mean tick value
+            - value: Counter or Gauge value, or Timer count
+            - min: Counter or Gauge value, or Timer minimum tick value
+            - max: Counter or Gauge value, or Timer maximum tick value
+            - avg: Counter or Gauge value, or Timer mean tick value
+            - type: Meter type
 
         :param message_format: Message format string
         :param meter_name: Name of the meter to be output
@@ -65,29 +64,25 @@ class Reporter:
         :return: Formatted output message containing meter values
         """
 
-        if isinstance(meter, Counter):
-            message = message_format.format(
-                name=meter_name,
-                value=meter.get_count(since_last_interval),
-                min=meter.get_count(since_last_interval),
-                max=meter.get_count(since_last_interval),
-                avg=meter.get_count(since_last_interval),
-            )
-        elif isinstance(meter, Gauge):
+        if isinstance(meter, Timer):
             message = message_format.format(
                 name=meter_name,
                 value=meter.get_value(since_last_interval),
-                min=meter.get_value(since_last_interval),
-                max=meter.get_value(since_last_interval),
-                avg=meter.get_value(since_last_interval),
-            )
-        elif isinstance(meter, Timer):
-            message = message_format.format(
-                name=meter_name,
-                value=meter.get_count(since_last_interval),
+                count=meter.get_count(since_last_interval),
                 min=meter.get_min_tick_time(since_last_interval),
                 max=meter.get_max_tick_time(since_last_interval),
                 avg=meter.get_mean_tick_time(since_last_interval),
+                type=meter.meter_type.value,
+            )
+        elif isinstance(meter, Counter) or isinstance(meter, Gauge):
+            message = message_format.format(
+                name=meter_name,
+                value=meter.get_value(since_last_interval),
+                count=meter.get_value(since_last_interval),
+                min=meter.get_value(since_last_interval),
+                max=meter.get_value(since_last_interval),
+                avg=meter.get_value(since_last_interval),
+                type=meter.meter_type.value,
             )
         else:
             raise ValueError(f"Unsupported meter of type {type(meter)}")

@@ -21,6 +21,7 @@ def test_timer_decorator_creates_counter_in_registry() -> None:
 
     assert isinstance(timer, Timer)
     assert timer.get_count() == 1
+    assert 0 < timer.get_value() < 0.05
     assert 0 < timer.get_mean_tick_time() < 0.05
 
 

@@ -23,7 +23,7 @@ def test_reporter_flushing_on_timer(caplog) -> None:
     registry.add_counter("test_counter", counter)
 
     with caplog.at_level(logging.INFO):
-        reporter = LoggingReporter(0.1, "Hello World!", logger, logging.INFO, ReportingType.CUMULATIVE)
+        reporter = LoggingReporter(0.1, logger, logging.INFO, ReportingType.CUMULATIVE)
         reporter.start()
 
         time.sleep(0.5)
@@ -34,36 +34,51 @@ def test_reporter_flushing_on_timer(caplog) -> None:
 
 
 def test_message_format_counter() -> None:
-    message_format = "{{'name': '{name}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}}}"
+    message_format = (
+        "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}}}"
+    )
 
     counter = Counter()
     counter += 10
 
     message = Reporter.format_message(message_format, "test_counter", counter, False)
 
-    assert message == "{'name': 'test_counter', 'value': 10, 'min': 10, 'max': 10, 'average': 10}"
+    assert (
+        message
+        == "{'name': 'test_counter', 'type': 'counter', 'value': 10.0, 'min': 10.0, 'max': 10.0, 'average': 10.0}"
+    )
 
 
 def test_message_format_gauge() -> None:
-    message_format = "{{'name': '{name}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}}}"
+    message_format = (
+        "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}}}"
+    )
 
     gauge = Gauge()
     gauge += 10
 
     message = Reporter.format_message(message_format, "test_gauge", gauge, False)
 
-    assert message == "{'name': 'test_gauge', 'value': 10.0, 'min': 10.0, 'max': 10.0, 'average': 10.0}"
+    assert (
+        message == "{'name': 'test_gauge', 'type': 'gauge', 'value': 10.0, 'min': 10.0, 'max': 10.0, 'average': 10.0}"
+    )
 
 
 def test_message_format_timer() -> None:
-    message_format = "{{'name': '{name}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}}}"
+    message_format = (
+        "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'count': {count}, 'min': {min}, "
+        "'max': {max}, 'average': {avg}}}"
+    )
 
     timer = Timer()
     timer.ticks = [1, 2, 3, 4, 5]
 
     message = Reporter.format_message(message_format, "test_timer", timer, False)
 
-    assert message == "{'name': 'test_timer', 'value': 5, 'min': 1, 'max': 5, 'average': 3.0}"
+    assert (
+        message
+        == "{'name': 'test_timer', 'type': 'timer', 'value': 15, 'count': 5, 'min': 1, 'max': 5, 'average': 3.0}"
+    )
 
 
 def test_message_format_unsupported_meter() -> None:
