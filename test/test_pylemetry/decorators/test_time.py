@@ -2,7 +2,7 @@ import pytest
 
 from pylemetry import registry
 from pylemetry.decorators import time
-from pylemetry.meters import Timer
+from pylemetry.meters import Timer, MeterType
 
 
 @time()
@@ -48,4 +48,4 @@ def test_time_decorator_with_name() -> None:
 
     mock()
 
-    assert "test_timer_meter" in registry.TIMERS
+    assert "test_timer_meter" in registry.METERS[MeterType.TIMER]

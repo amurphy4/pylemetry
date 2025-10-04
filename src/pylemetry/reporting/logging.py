@@ -49,8 +49,8 @@ class LoggingReporter(Reporter):
     def flush(self) -> None:
         since_last_interval = self._type == ReportingType.INTERVAL
 
-        for meters in [registry.COUNTERS, registry.GAUGES, registry.TIMERS]:
-            for name, meter in meters.items():  # type: ignore
+        for _, meters in registry.METERS.items():
+            for name, meter in meters.items():
                 self.logger.log(
                     self.level,
                     self.format_message(self.message_formats[meter.meter_type], name, meter, since_last_interval),

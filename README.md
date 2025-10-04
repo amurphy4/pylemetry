@@ -170,6 +170,20 @@ registry.add_timer("example", timer)
 ```
 
 Each meter type has an `add_meter`, `get_meter` and `remove_meter` method to manage meters in the `registry`, each requiring a unique meter name.
+There is also a base method for each of these methods, accepting an additional parameter of `MeterType`
+
+```python
+from pylemetry import registry
+from pylemetry.meters import Counter, MeterType
+
+
+counter = Counter()
+
+registry.add_meter("example", counter, MeterType.COUNTER)
+registry.get_meter("example", MeterType.COUNTER)
+registry.remove_meter("example", MeterType.COUNTER)
+registry.get_meter("example", MeterType.COUNTER)  # None
+```
 
 The `registry` can be cleared through the `clear()` method
 
