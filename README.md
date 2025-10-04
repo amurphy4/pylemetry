@@ -26,7 +26,7 @@ def some_method() -> None:
     for _ in range(100):
         counter.add()  # counter += 1 is also supported
 
-    counter.get_count()  # 100
+    counter.get_value()  # 100
 ```
 
 or via a decorator
@@ -52,10 +52,10 @@ def main() -> None:
         another_method()
 
     counter = registry.get_counter("some_method")
-    counter.get_count()  # 100
+    counter.get_value()  # 100
 
     counter = registry.get_counter("named_counter")
-    counter.get_count()  # 100
+    counter.get_value()  # 100
 ```
 
 When using this meter via a decorator, the meter gets added to the global `registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
@@ -138,6 +138,7 @@ def main() -> None:
         
     timer = registry.get_timer("some_method")
     timer.get_count()  # 100
+    timer.get_value()  # Sum total execution time of the some_method function
     timer.get_mean_tick_time()  # Mean execution time of the some_method function
     timer.get_max_tick_time()  # Maximum execution time of the some_method function
     timer.get_min_tick_time()  # Minimum execution time of the some_method function
@@ -179,15 +180,15 @@ Periodic reporting of all meters in the registry can be achieved using the `Logg
 ### Message Formatting
 The message format allows for substitutions for metric values with the following options
 
-| Substitution Key | Effect                                                                                                                                       |
-|------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| name             | Name of the meter being logged                                                                                                               |
-| value            | Value of the meter, `value` for `Counter` and `Gauge` meters, sum of all ticks for `Timer` meters                                            |
-| count            | Value of the meter for `Counter` and `Gauge` meters, number of ticks for `Timer` meters                                                      |
-| min              | Minimum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `min_tick_time` for `Timer` metes       |
-| max              | Maximum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `max_tick_time` for `Timer` metes       |
-| avg              | Mean average value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `mean_tick_time` for `Timer` metes |
-| type             | Type of the meter (`counter`, `gauge`, or `timer`)                                                                                           |
+| Substitution Key | Effect                                                                                                                                        |
+|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| name             | Name of the meter being logged                                                                                                                |
+| value            | Value of the meter, `value` for `Counter` and `Gauge` meters, sum of all ticks for `Timer` meters                                             |
+| count            | Value of the meter for `Counter` and `Gauge` meters, number of ticks for `Timer` meters                                                       |
+| min              | Minimum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `min_tick_time` for `Timer` meters       |
+| max              | Maximum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `max_tick_time` for `Timer` meters       |
+| avg              | Mean average value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `mean_tick_time` for `Timer` meters |
+| type             | Type of the meter (`counter`, `gauge`, or `timer`)                                                                                            |
 
 As an example, a `Counter` meter named `sample_counter` with a value of 10
 ```python
