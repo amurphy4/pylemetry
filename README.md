@@ -186,6 +186,7 @@ The message format allows for substitutions for metric values with the following
 | min              | Minimum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `min_tick_time` for `Timer` metes       |
 | max              | Maximum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `max_tick_time` for `Timer` metes       |
 | avg              | Mean average value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `mean_tick_time` for `Timer` metes |
+| type             | Type of the meter (`counter`, `gauge`, or `timer`)                                                                                           |
 
 As an example, a `Counter` meter named `sample_counter` with a value of 10
 ```python

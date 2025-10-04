@@ -54,6 +54,7 @@ class Reporter:
             - min: Counter or Gauge value, or Timer minimum tick value
             - max: Counter or Gauge value, or Timer maximum tick value
             - avg: Counter or Gauge value, or Timer mean tick value
+            - type: Meter type
 
         :param message_format: Message format string
         :param meter_name: Name of the meter to be output
@@ -70,6 +71,7 @@ class Reporter:
                 min=meter.get_min_tick_time(since_last_interval),
                 max=meter.get_max_tick_time(since_last_interval),
                 avg=meter.get_mean_tick_time(since_last_interval),
+                type=meter.meter_type,
             )
         elif isinstance(meter, Counter) or isinstance(meter, Gauge):
             message = message_format.format(
@@ -78,6 +80,7 @@ class Reporter:
                 min=meter.get_value(since_last_interval),
                 max=meter.get_value(since_last_interval),
                 avg=meter.get_value(since_last_interval),
+                type=meter.meter_type,
             )
         else:
             raise ValueError(f"Unsupported meter of type {type(meter)}")
