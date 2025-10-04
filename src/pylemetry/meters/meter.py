@@ -1,8 +1,8 @@
-from enum import StrEnum
+from enum import Enum
 from threading import Lock
 
 
-class MeterType(StrEnum):
+class MeterType(Enum):
     COUNTER = "counter"
     GAUGE = "gauge"
     TIMER = "timer"

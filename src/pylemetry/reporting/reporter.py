@@ -72,7 +72,7 @@ class Reporter:
                 min=meter.get_min_tick_time(since_last_interval),
                 max=meter.get_max_tick_time(since_last_interval),
                 avg=meter.get_mean_tick_time(since_last_interval),
-                type=meter.meter_type,
+                type=meter.meter_type.value,
             )
         elif isinstance(meter, Counter) or isinstance(meter, Gauge):
             message = message_format.format(
@@ -82,7 +82,7 @@ class Reporter:
                 min=meter.get_value(since_last_interval),
                 max=meter.get_value(since_last_interval),
                 avg=meter.get_value(since_last_interval),
-                type=meter.meter_type,
+                type=meter.meter_type.value,
             )
         else:
             raise ValueError(f"Unsupported meter of type {type(meter)}")
