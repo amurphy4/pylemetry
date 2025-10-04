@@ -1,12 +1,20 @@
 import logging
 import time
 
+import pytest
+from logot import Logot, logged
+from logot.loguru import LoguruCapturer
+from loguru import logger as loguru_logger
+
 from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, Timer, MeterType
 from pylemetry.reporting import LoggingReporter, ReportingType
 
 
-def test_logging_reporter_logs_messages(caplog) -> None:
+@pytest.mark.parametrize(
+    "level", [logging.DEBUG, logging.INFO, logging.WARNING, logging.WARN, logging.ERROR, logging.CRITICAL]
+)
+def test_logging_reporter_logs_messages(caplog, level: int) -> None:
     logger = logging.getLogger(__name__)
 
     counter = Counter()
@@ -14,12 +22,26 @@ def test_logging_reporter_logs_messages(caplog) -> None:
 
     registry.add_counter("test_counter", counter)
 
-    with caplog.at_level(logging.INFO):
-        reporter = LoggingReporter(10, logger, logging.INFO, ReportingType.CUMULATIVE)
+    with caplog.at_level(level):
+        reporter = LoggingReporter(10, logger, level, ReportingType.CUMULATIVE)
         reporter.configure_message_format("Hello World!")
         reporter.flush()
 
     assert "Hello World!" in caplog.text
+
+
+def test_logging_reporter_loguru_compatibility() -> None:
+    counter = Counter()
+    counter += 1
+
+    registry.add_counter("test_counter", counter)
+
+    with Logot().capturing(capturer=LoguruCapturer) as logot:
+        reporter = LoggingReporter(10, loguru_logger, logging.INFO, ReportingType.CUMULATIVE)
+        reporter.configure_message_format("Hello World!")
+        reporter.flush()
+
+        logot.assert_logged(logged.info("Hello World!"))
 
 
 def test_logging_default_message_formats(caplog) -> None:

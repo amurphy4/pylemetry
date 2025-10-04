@@ -1,3 +1,4 @@
+import logging
 from typing import Protocol, ParamSpec, TypeVar, Optional
 
 from pylemetry import registry
@@ -10,19 +11,15 @@ R = TypeVar("R", covariant=True)
 
 
 class Loggable(Protocol[P, R]):
-    def log(self, level: int, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
-
     def debug(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
 
     def info(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
 
-    def warn(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
+    def warning(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
 
     def error(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
 
     def critical(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
-
-    def exception(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
 
 
 class LoggingReporter(Reporter):
@@ -51,10 +48,22 @@ class LoggingReporter(Reporter):
 
         for _, meters in registry.METERS.items():
             for name, meter in meters.items():
-                self.logger.log(
-                    self.level,
+                self._log(
                     self.format_message(self.message_formats[meter.meter_type], name, meter, since_last_interval),
                 )
 
                 if since_last_interval:
                     meter.mark_interval()
+
+    def _log(self, message: str) -> None:
+        # Check the log level manually for compatibility with libraries like Loguru
+        if self.level == logging.DEBUG:
+            self.logger.debug(message)
+        elif self.level == logging.INFO:
+            self.logger.info(message)
+        elif self.level == logging.WARNING or self.level == logging.WARN:
+            self.logger.warning(message)
+        elif self.level == logging.ERROR:
+            self.logger.error(message)
+        elif self.level == logging.CRITICAL:
+            self.logger.critical(message)
