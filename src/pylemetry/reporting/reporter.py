@@ -1,4 +1,6 @@
 from typing import Optional
+from typing_extensions import Self
+from types import TracebackType
 
 import threading
 
@@ -10,6 +12,16 @@ class Reporter:
         self.interval = interval
         self.__timer_thread: Optional[threading.Timer] = None
         self.running = False
+
+    def __enter__(self) -> Self:
+        self.start()
+
+        return self
+
+    def __exit__(
+        self, exc_type: Optional[type[BaseException]], exc_val: Optional[BaseException], exc_tb: Optional[TracebackType]
+    ):
+        self.stop()
 
     def flush(self) -> None:
         """
