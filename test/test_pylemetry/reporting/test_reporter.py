@@ -33,6 +33,24 @@ def test_reporter_flushing_on_timer(caplog) -> None:
         assert len(caplog.records) == 5
 
 
+def test_reporter_context_manager(caplog) -> None:
+    logger = logging.getLogger(__name__)
+
+    counter = Counter()
+    counter += 1
+
+    registry.add_counter("test_counter", counter)
+
+    with caplog.at_level(logging.INFO):
+        with LoggingReporter(0.1, logger, logging.INFO, ReportingType.CUMULATIVE) as reporter:
+            reporter.configure_message_format("{name} - {count}")
+
+            time.sleep(0.5)
+
+        assert len(caplog.records) == 5
+        assert caplog.records[0].msg == "test_counter - 1.0"
+
+
 def test_message_format_counter() -> None:
     message_format = (
         "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}}}"
