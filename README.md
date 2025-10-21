@@ -229,3 +229,18 @@ If `ReportingType.INTERVAL` is provided, all meters will log only the changes in
 
 To configure message formats, use the `configure_message_formats` method, optionally providing a `MeterType` for the meters that this message format should apply to. 
 If no `MeterType` is provided, the message format will apply to all meters
+
+As a `Reporter`, you can use `LoggingReporter` as a context manager to ensure that values are always flushed before exiting
+
+```python
+import logging
+
+from pylemetry.meters import MeterType
+from pylemetry.reporting import LoggingReporter, ReportingType
+
+logger = logging.getLogger()
+
+with LoggingReporter(10, logger, logging.INFO, ReportingType.CUMULATIVE) as reporter:
+    reporter.configure_message_format("{name} - {value}", MeterType.COUNTER)
+    ...
+```
