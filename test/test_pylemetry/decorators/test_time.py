@@ -6,8 +6,8 @@ from pylemetry.meters import Timer, MeterType
 
 
 @time()
-def mock_function() -> str:
-    return "A function decorated with the timer decorator"
+def mock_function(message: str) -> str:
+    return f"A function decorated with the timer decorator with message {message}"
 
 
 def test_timer_decorator_creates_counter_in_registry() -> None:
@@ -15,7 +15,7 @@ def test_timer_decorator_creates_counter_in_registry() -> None:
 
     assert registry.get_timer(timer_name) is None
 
-    mock_function()
+    mock_function("Hello World!")
 
     timer = registry.get_timer(timer_name)
 
@@ -32,7 +32,7 @@ def test_count_decorator_updates_existing_counter(call_count: int) -> None:
     assert registry.get_timer(timer_name) is None
 
     for _ in range(call_count):
-        mock_function()
+        mock_function("Hello World!")
 
     timer = registry.get_timer(timer_name)
 
