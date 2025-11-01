@@ -2,7 +2,7 @@ from pylemetry.meters.meter import Meter, MeterType
 
 
 class Counter(Meter):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(MeterType.COUNTER)
 
     def add(self, value: int = 1) -> None:

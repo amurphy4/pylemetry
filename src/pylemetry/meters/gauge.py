@@ -2,7 +2,7 @@ from pylemetry.meters.meter import Meter, MeterType
 
 
 class Gauge(Meter):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(MeterType.GAUGE)
 
     def set_value(self, value: float):
