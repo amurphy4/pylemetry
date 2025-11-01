@@ -244,3 +244,7 @@ with LoggingReporter(10, logger, logging.INFO, ReportingType.CUMULATIVE) as repo
     reporter.configure_message_format("{name} - {value}", MeterType.COUNTER)
     ...
 ```
+
+When using a reporter as a context manager there is an additional optional parameter you can set,
+`clear_registry_on_exit` which is set to `False` by default. When set to `True`, this will
+clear the registry (via `registry.clear()`) when the context manager exits
