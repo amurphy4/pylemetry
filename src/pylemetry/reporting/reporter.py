@@ -4,14 +4,16 @@ from types import TracebackType
 
 import threading
 
+from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, Timer, Meter
 
 
 class Reporter:
-    def __init__(self, interval: float) -> None:
+    def __init__(self, interval: float, clear_registry_on_exit: bool = False) -> None:
         self.interval = interval
         self.__timer_thread: Optional[threading.Timer] = None
         self.running = False
+        self.clear_registry_on_exit = clear_registry_on_exit
 
     def __enter__(self) -> Self:
         self.start()
@@ -22,6 +24,9 @@ class Reporter:
         self, exc_type: Optional[type[BaseException]], exc_val: Optional[BaseException], exc_tb: Optional[TracebackType]
     ):
         self.stop()
+
+        if self.clear_registry_on_exit:
+            registry.clear()
 
     def flush(self) -> None:
         """

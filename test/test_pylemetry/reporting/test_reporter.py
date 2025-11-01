@@ -51,6 +51,25 @@ def test_reporter_context_manager(caplog) -> None:
         assert caplog.records[0].msg == "test_counter - 1.0"
 
 
+def test_reporter_context_manager_clear_registry_on_exit(caplog) -> None:
+    logger = logging.getLogger(__name__)
+
+    counter = Counter()
+    counter += 1
+
+    registry.add_counter("test_counter", counter)
+
+    with LoggingReporter(0.1, logger, logging.INFO, ReportingType.CUMULATIVE):
+        counter += 1
+
+    assert registry.get_counter("test_counter") == counter
+
+    with LoggingReporter(0.1, logger, logging.INFO, ReportingType.CUMULATIVE, clear_registry_on_exit=True):
+        counter += 1
+
+    assert registry.get_counter("test_counter") is None
+
+
 def test_message_format_counter() -> None:
     message_format = (
         "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}}}"
