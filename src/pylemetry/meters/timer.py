@@ -8,10 +8,10 @@ from pylemetry.meters.meter import Meter, MeterType
 
 
 class Timer(Meter):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(MeterType.TIMER)
 
-        self.ticks = []
+        self.ticks: list[float] = []
 
     def tick(self, tick: float) -> None:
         """
@@ -49,7 +49,7 @@ class Timer(Meter):
 
         ticks = self.get_ticks_since_last_interval() if since_last_interval else self.ticks
 
-        return sum(ticks)
+        return sum(ticks)  # type: ignore
 
     def get_count(self, since_last_interval: bool = False) -> int:
         """
