@@ -9,7 +9,7 @@ class MeterType(Enum):
 
 
 class Meter:
-    def __init__(self, meter_type: MeterType):
+    def __init__(self, meter_type: MeterType) -> None:
         self.lock = Lock()
         self.value = 0.0
         self.last_interval_value = 0.0

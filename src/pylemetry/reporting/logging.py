@@ -23,7 +23,7 @@ class Loggable(Protocol[P, R]):
 
 
 class LoggingReporter(Reporter):
-    def __init__(self, interval: float, logger: Loggable, level: int, _type: ReportingType):
+    def __init__(self, interval: float, logger: Loggable, level: int, _type: ReportingType) -> None:
         super().__init__(interval)
 
         self.logger = logger
