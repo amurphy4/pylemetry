@@ -25,7 +25,9 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 
-dependencies = []
+dependencies = [
+    "typing-extensions>=4.15.0",
+]
 
 [project.urls]
 Homepage = "https://pypi.org/project/pylemetry/"
