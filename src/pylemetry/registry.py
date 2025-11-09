@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from pylemetry.meters import Counter, Gauge, Timer, Meter, MeterType
 
@@ -18,33 +18,45 @@ def clear() -> None:
         meters.clear()
 
 
-def add_meter(name: str, meter: Meter, meter_type: MeterType) -> None:
+def add_meter(meter: Meter) -> None:
     """
     Add a meter to the global registry
 
-    :param name: Unique name of the meter to add
     :param meter: Meter to add
-    :param meter_type: Meter type of the meter to add
 
     :raises AttributeError: When the name provided for the meter of this type is already in use in the global registry
     """
 
-    if name in METERS[meter_type]:
-        raise AttributeError(f"A {meter_type.value} with the name '{name}' already exists")
+    serialized_tags = [f"{key}-{value}" for key, value in meter.get_tags().items()]
 
-    METERS[meter_type][name] = meter
+    combined_name = f"{meter.name}{'_'.join(serialized_tags)}"
+
+    if combined_name in METERS[meter.meter_type]:
+        raise AttributeError(
+            f"A {meter.meter_type.value} with the name '{meter.name}' and the same tags already exists"
+        )
+
+    METERS[meter.meter_type][combined_name] = meter
 
 
-def get_meter(name, meter_type: MeterType) -> Optional[Meter]:
+def get_meter(name, meter_type: MeterType, tags: Optional[dict[str, Union[str, int, float]]] = None) -> Optional[Meter]:
     """
     Get a meter from the global registry by its name
 
     :param name: Name of the meter
     :param meter_type: Meter type of the meter to retrieve
+    :param tags: The tags associated with the meter you want to retrieve
     :return: Meter in the global registry
     """
 
-    return METERS[meter_type].get(name)
+    if tags is None:
+        tags = {}
+
+    serialized_tags = [f"{key}-{value}" for key, value in tags.items()]
+
+    combined_name = f"{name}{'_'.join(serialized_tags)}"
+
+    return METERS[meter_type].get(combined_name)
 
 
 def remove_meter(name, meter_type: MeterType) -> None:
@@ -59,28 +71,28 @@ def remove_meter(name, meter_type: MeterType) -> None:
         del METERS[meter_type][name]
 
 
-def add_counter(name: str, counter: Counter) -> None:
+def add_counter(counter: Counter) -> None:
     """
     Add a counter to the global registry
 
-    :param name: Unique name of the counter
     :param counter: Counter to add
 
     :raises AttributeError: When the name provided for the counter metric is already in use in the global registry
     """
 
-    add_meter(name, counter, MeterType.COUNTER)
+    add_meter(counter)
 
 
-def get_counter(name: str) -> Optional[Counter]:
+def get_counter(name: str, tags: Optional[dict[str, Union[str, int, float]]] = None) -> Optional[Counter]:
     """
     Get a counter from the global registry by its name
 
     :param name: Name of the counter
+    :param tags: The tags associated with the counter you want to retrieve
     :return: Counter in the global registry
     """
 
-    return get_meter(name, MeterType.COUNTER)  # type: ignore
+    return get_meter(name, MeterType.COUNTER, tags)  # type: ignore
 
 
 def remove_counter(name: str) -> None:
@@ -93,28 +105,28 @@ def remove_counter(name: str) -> None:
     remove_meter(name, MeterType.COUNTER)
 
 
-def add_gauge(name: str, gauge: Gauge) -> None:
+def add_gauge(gauge: Gauge) -> None:
     """
     Add a gauge to the global registry
 
-    :param name: Unique name of the gauge
     :param gauge: Gauge to add
 
     :raises AttributeError: When the name provided for the gauge metric is already in use in the global registry
     """
 
-    add_meter(name, gauge, MeterType.GAUGE)
+    add_meter(gauge)
 
 
-def get_gauge(name: str) -> Optional[Gauge]:
+def get_gauge(name: str, tags: Optional[dict[str, Union[str, int, float]]] = None) -> Optional[Gauge]:
     """
     Get a gauge from the global registry by its name
 
     :param name: Name of the gauge
+    :param tags: The tags associated with the gauge you want to retrieve
     :return: Gauge in the global registry
     """
 
-    return get_meter(name, MeterType.GAUGE)  # type: ignore
+    return get_meter(name, MeterType.GAUGE, tags)  # type: ignore
 
 
 def remove_gauge(name: str) -> None:
@@ -127,28 +139,28 @@ def remove_gauge(name: str) -> None:
     remove_meter(name, MeterType.GAUGE)
 
 
-def add_timer(name: str, timer: Timer) -> None:
+def add_timer(timer: Timer) -> None:
     """
     Add a timer to the global registry
 
-    :param name: Unique name of the timer
     :param timer: Timer to add
 
     :raises AttributeError: When the name provided for the timer metric is already in use in the global registry
     """
 
-    add_meter(name, timer, MeterType.TIMER)
+    add_meter(timer)
 
 
-def get_timer(name: str) -> Optional[Timer]:
+def get_timer(name: str, tags: Optional[dict[str, Union[str, int, float]]] = None) -> Optional[Timer]:
     """
     Get a timer from the global registry by its name
 
     :param name: Name of the timer
+    :param tags: The tags associated with the timer you want to retrieve
     :return: Timer in the global registry
     """
 
-    return get_meter(name, MeterType.TIMER)  # type: ignore
+    return get_meter(name, MeterType.TIMER, tags)  # type: ignore
 
 
 def remove_timer(name: str) -> None:

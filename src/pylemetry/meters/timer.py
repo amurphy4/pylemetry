@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Union, Optional
 
 import time
 
@@ -8,8 +8,8 @@ from pylemetry.meters.meter import Meter, MeterType
 
 
 class Timer(Meter):
-    def __init__(self) -> None:
-        super().__init__(MeterType.TIMER)
+    def __init__(self, name: str, tags: Optional[dict[str, Union[str, int, float]]] = None) -> None:
+        super().__init__(MeterType.TIMER, name, tags)
 
         self.ticks: list[float] = []
 

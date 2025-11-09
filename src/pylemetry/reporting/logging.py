@@ -49,9 +49,9 @@ class LoggingReporter(Reporter):
         since_last_interval = self._type == ReportingType.INTERVAL
 
         for _, meters in registry.METERS.items():
-            for name, meter in meters.items():
+            for _, meter in meters.items():
                 self._log(
-                    self.format_message(self.message_formats[meter.meter_type], name, meter, since_last_interval),
+                    self.format_message(self.message_formats[meter.meter_type], meter, since_last_interval),
                 )
 
                 if since_last_interval:

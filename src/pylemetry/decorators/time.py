@@ -27,8 +27,8 @@ def time(name: Optional[str] = None) -> Callable[[Callable[P, R]], Callable[P, R
             _timer = registry.get_timer(time_name)
 
             if not _timer:
-                _timer = Timer()
-                registry.add_timer(time_name, _timer)
+                _timer = Timer(time_name)
+                registry.add_timer(_timer)
 
             with _timer.time():
                 return f(*args, **kwargs)

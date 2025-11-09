@@ -27,8 +27,8 @@ def count(name: Optional[str] = None) -> Callable[[Callable[P, R]], Callable[P, 
             counter = registry.get_counter(counter_name)
 
             if not counter:
-                counter = Counter()
-                registry.add_counter(counter_name, counter)
+                counter = Counter(name=counter_name)
+                registry.add_counter(counter)
 
             counter += 1
 

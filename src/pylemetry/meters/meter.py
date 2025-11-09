@@ -1,5 +1,6 @@
 from enum import Enum
 from threading import Lock
+from typing import Union, Optional
 
 
 class MeterType(Enum):
@@ -9,11 +10,19 @@ class MeterType(Enum):
 
 
 class Meter:
-    def __init__(self, meter_type: MeterType) -> None:
+    def __init__(
+        self, meter_type: MeterType, name: str, tags: Optional[dict[str, Union[str, int, float]]] = None
+    ) -> None:
         self.lock = Lock()
         self.value = 0.0
         self.last_interval_value = 0.0
         self.meter_type = meter_type
+        self.name = name
+
+        if not tags:
+            tags = {}
+
+        self.__tags = tags
 
     def get_value(self, since_last_interval: bool = False) -> float:
         """
@@ -36,3 +45,6 @@ class Meter:
 
         with self.lock:
             self.last_interval_value = self.value
+
+    def get_tags(self) -> dict[str, Union[str, int, float]]:
+        return self.__tags
