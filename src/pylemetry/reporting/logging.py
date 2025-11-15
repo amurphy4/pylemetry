@@ -1,5 +1,5 @@
 import logging
-from typing import Protocol, ParamSpec, TypeVar, Optional
+from typing import Protocol, ParamSpec, TypeVar, Optional, Union
 
 from pylemetry import registry
 from pylemetry.meters import MeterType
@@ -24,9 +24,15 @@ class Loggable(Protocol[P, R]):
 
 class LoggingReporter(Reporter):
     def __init__(
-        self, interval: float, logger: Loggable, level: int, _type: ReportingType, clear_registry_on_exit: bool = False
+        self,
+        interval: float,
+        logger: Loggable,
+        level: int,
+        _type: ReportingType,
+        clear_registry_on_exit: bool = False,
+        universal_tags: Optional[dict[str, Union[str, int, float]]] = None,
     ) -> None:
-        super().__init__(interval, clear_registry_on_exit)
+        super().__init__(interval, clear_registry_on_exit, universal_tags)
 
         self.logger = logger
         self.level = level

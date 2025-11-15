@@ -71,30 +71,36 @@ def test_reporter_context_manager_clear_registry_on_exit() -> None:
 
 
 def test_message_format_counter() -> None:
-    message_format = "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}, 'tags': {tags}}}"
+    message_format = (
+        "{{'name': '{name}', 'type': '{type}', 'value': {value}, "
+        "'min': {min}, 'max': {max}, 'average': {avg}, 'tags': {tags}}}"
+    )
 
     counter = Counter("test_counter")
     counter += 10
 
-    message = Reporter.format_message(message_format, counter, False)
+    message = Reporter(1.0).format_message(message_format, counter, False)
 
     assert (
-        message
-        == "{'name': 'test_counter', 'type': 'counter', 'value': 10.0, 'min': 10.0, 'max': 10.0, 'average': 10.0, 'tags': {}}"
+        message == "{'name': 'test_counter', 'type': 'counter', 'value': 10.0, "
+        "'min': 10.0, 'max': 10.0, 'average': 10.0, 'tags': {}}"
     )
 
 
 def test_message_format_gauge() -> None:
-    message_format = "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}, 'tags': {tags}}}"
+    message_format = (
+        "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, "
+        "'max': {max}, 'average': {avg}, 'tags': {tags}}}"
+    )
 
     gauge = Gauge("test_gauge")
     gauge += 10
 
-    message = Reporter.format_message(message_format, gauge, False)
+    message = Reporter(1.0).format_message(message_format, gauge, False)
 
     assert (
-        message
-        == "{'name': 'test_gauge', 'type': 'gauge', 'value': 10.0, 'min': 10.0, 'max': 10.0, 'average': 10.0, 'tags': {}}"
+        message == "{'name': 'test_gauge', 'type': 'gauge', 'value': 10.0, "
+        "'min': 10.0, 'max': 10.0, 'average': 10.0, 'tags': {}}"
     )
 
 
@@ -107,11 +113,11 @@ def test_message_format_timer() -> None:
     timer = Timer("test_timer")
     timer.ticks = [1, 2, 3, 4, 5]
 
-    message = Reporter.format_message(message_format, timer, False)
+    message = Reporter(1.0).format_message(message_format, timer, False)
 
     assert (
-        message
-        == "{'name': 'test_timer', 'type': 'timer', 'value': 15, 'count': 5, 'min': 1, 'max': 5, 'average': 3.0, 'tags': {}}"
+        message == "{'name': 'test_timer', 'type': 'timer', 'value': 15, "
+        "'count': 5, 'min': 1, 'max': 5, 'average': 3.0, 'tags': {}}"
     )
 
 
@@ -120,13 +126,23 @@ def test_message_format_with_tags() -> None:
 
     timer = Timer("test_timer", tags={"tag_1": "value", "tag_2": 2, "tag_3": 1.5})
 
-    message = Reporter.format_message(message_format, timer, False)
+    message = Reporter(1.0).format_message(message_format, timer, False)
+
+    assert message == "{'name': 'test_timer', 'tags': {'tag_1': 'value', 'tag_2': 2, 'tag_3': 1.5}}"
+
+
+def test_message_format_with_universal_tags() -> None:
+    message_format = "{{'name': '{name}', 'tags': {tags}}}"
+
+    timer = Timer("test_timer", tags={"tag_2": 2, "tag_3": 1.5})
+
+    message = Reporter(1.0, universal_tags={"tag_1": "value"}).format_message(message_format, timer, False)
 
     assert message == "{'name': 'test_timer', 'tags': {'tag_1': 'value', 'tag_2': 2, 'tag_3': 1.5}}"
 
 
 def test_message_format_unsupported_meter() -> None:
     with pytest.raises(ValueError) as exec_info:
-        Reporter.format_message("Hello World!", "fake meter", False)  # type: ignore
+        Reporter(1.0).format_message("Hello World!", "fake meter", False)  # type: ignore
 
     assert exec_info.value.args[0] == "Unsupported meter of type <class 'str'>"
