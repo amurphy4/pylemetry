@@ -5,10 +5,10 @@ from pylemetry.meters import Counter, Gauge, Timer, MeterType
 
 
 def test_add_counter() -> None:
-    counter = Counter()
     counter_name = "test_counter"
+    counter = Counter(counter_name)
 
-    registry.add_counter(counter_name, counter)
+    registry.add_counter(counter)
 
     assert len(registry.METERS[MeterType.COUNTER]) == 1
     assert counter_name in registry.METERS[MeterType.COUNTER]
@@ -16,24 +16,24 @@ def test_add_counter() -> None:
 
 
 def test_add_counter_already_exists() -> None:
-    counter = Counter()
     counter_name = "test_counter"
+    counter = Counter(counter_name)
 
-    registry.add_counter(counter_name, counter)
+    registry.add_counter(counter)
 
     with pytest.raises(AttributeError) as exec_info:
-        new_counter = Counter()
+        new_counter = Counter(counter_name)
 
-        registry.add_counter(counter_name, new_counter)
+        registry.add_counter(new_counter)
 
-    assert exec_info.value.args[0] == f"A counter with the name '{counter_name}' already exists"
+    assert exec_info.value.args[0] == f"A counter with the name '{counter_name}' and the same tags already exists"
 
 
 def test_get_counter() -> None:
-    counter = Counter()
     counter_name = "test_counter"
+    counter = Counter(counter_name)
 
-    registry.add_counter(counter_name, counter)
+    registry.add_counter(counter)
 
     new_counter = registry.get_counter(counter_name)
 
@@ -41,10 +41,10 @@ def test_get_counter() -> None:
 
 
 def test_remove_counter() -> None:
-    counter = Counter()
     counter_name = "test_counter"
+    counter = Counter(counter_name)
 
-    registry.add_counter(counter_name, counter)
+    registry.add_counter(counter)
 
     assert counter_name in registry.METERS[MeterType.COUNTER]
 
@@ -55,10 +55,10 @@ def test_remove_counter() -> None:
 
 
 def test_add_gauge() -> None:
-    gauge = Gauge()
     gauge_name = "test_gauge"
+    gauge = Gauge(gauge_name)
 
-    registry.add_gauge(gauge_name, gauge)
+    registry.add_gauge(gauge)
 
     assert len(registry.METERS[MeterType.GAUGE]) == 1
     assert gauge_name in registry.METERS[MeterType.GAUGE]
@@ -66,24 +66,24 @@ def test_add_gauge() -> None:
 
 
 def test_add_gauge_already_exists() -> None:
-    gauge = Gauge()
     gauge_name = "test_gauge"
+    gauge = Gauge(gauge_name)
 
-    registry.add_gauge(gauge_name, gauge)
+    registry.add_gauge(gauge)
 
     with pytest.raises(AttributeError) as exec_info:
-        new_gauge = Gauge()
+        new_gauge = Gauge(gauge_name)
 
-        registry.add_gauge(gauge_name, new_gauge)
+        registry.add_gauge(new_gauge)
 
-    assert exec_info.value.args[0] == f"A gauge with the name '{gauge_name}' already exists"
+    assert exec_info.value.args[0] == f"A gauge with the name '{gauge_name}' and the same tags already exists"
 
 
 def test_get_gauge() -> None:
-    gauge = Gauge()
     gauge_name = "test_gauge"
+    gauge = Gauge(gauge_name)
 
-    registry.add_gauge(gauge_name, gauge)
+    registry.add_gauge(gauge)
 
     new_gauge = registry.get_gauge(gauge_name)
 
@@ -91,10 +91,10 @@ def test_get_gauge() -> None:
 
 
 def test_remove_gauge() -> None:
-    gauge = Gauge()
     gauge_name = "test_gauge"
+    gauge = Gauge(gauge_name)
 
-    registry.add_gauge(gauge_name, gauge)
+    registry.add_gauge(gauge)
 
     assert gauge_name in registry.METERS[MeterType.GAUGE]
 
@@ -105,10 +105,10 @@ def test_remove_gauge() -> None:
 
 
 def test_add_timer() -> None:
-    timer = Timer()
     timer_name = "test_timer"
+    timer = Timer(timer_name)
 
-    registry.add_timer(timer_name, timer)
+    registry.add_timer(timer)
 
     assert len(registry.METERS[MeterType.TIMER]) == 1
     assert timer_name in registry.METERS[MeterType.TIMER]
@@ -116,24 +116,24 @@ def test_add_timer() -> None:
 
 
 def test_add_timer_already_exists() -> None:
-    timer = Timer()
     timer_name = "test_timer"
+    timer = Timer(timer_name)
 
-    registry.add_timer(timer_name, timer)
+    registry.add_timer(timer)
 
     with pytest.raises(AttributeError) as exec_info:
-        new_timer = Timer()
+        new_timer = Timer(timer_name)
 
-        registry.add_timer(timer_name, new_timer)
+        registry.add_timer(new_timer)
 
-    assert exec_info.value.args[0] == f"A timer with the name '{timer_name}' already exists"
+    assert exec_info.value.args[0] == f"A timer with the name '{timer_name}' and the same tags already exists"
 
 
 def test_get_timer() -> None:
-    timer = Timer()
     timer_name = "test_timer"
+    timer = Timer(timer_name)
 
-    registry.add_timer(timer_name, timer)
+    registry.add_timer(timer)
 
     new_timer = registry.get_timer(timer_name)
 
@@ -141,10 +141,10 @@ def test_get_timer() -> None:
 
 
 def test_remove_timer() -> None:
-    timer = Timer()
     timer_name = "test_timer"
+    timer = Timer(timer_name)
 
-    registry.add_timer(timer_name, timer)
+    registry.add_timer(timer)
 
     assert timer_name in registry.METERS[MeterType.TIMER]
 
@@ -155,18 +155,18 @@ def test_remove_timer() -> None:
 
 
 def test_clear_registry() -> None:
-    counter = Counter()
     counter_name = "test_counter"
+    counter = Counter(counter_name)
 
-    gauge = Gauge()
     gauge_name = "test_gauge"
+    gauge = Gauge(gauge_name)
 
-    timer = Timer()
     timer_name = "test_timer"
+    timer = Timer(timer_name)
 
-    registry.add_counter(counter_name, counter)
-    registry.add_gauge(gauge_name, gauge)
-    registry.add_timer(timer_name, timer)
+    registry.add_counter(counter)
+    registry.add_gauge(gauge)
+    registry.add_timer(timer)
 
     assert counter_name in registry.METERS[MeterType.COUNTER]
     assert gauge_name in registry.METERS[MeterType.GAUGE]
