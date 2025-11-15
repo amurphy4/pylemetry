@@ -1,3 +1,4 @@
+from collections.abc import Mapping
 from typing import Optional, Union
 
 from pylemetry.meters import Counter, Gauge, Timer, Meter, MeterType
@@ -39,7 +40,9 @@ def add_meter(meter: Meter) -> None:
     METERS[meter.meter_type][combined_name] = meter
 
 
-def get_meter(name, meter_type: MeterType, tags: Optional[dict[str, Union[str, int, float]]] = None) -> Optional[Meter]:
+def get_meter(
+    name, meter_type: MeterType, tags: Optional[Mapping[str, Union[str, int, float]]] = None
+) -> Optional[Meter]:
     """
     Get a meter from the global registry by its name
 
@@ -83,7 +86,7 @@ def add_counter(counter: Counter) -> None:
     add_meter(counter)
 
 
-def get_counter(name: str, tags: Optional[dict[str, Union[str, int, float]]] = None) -> Optional[Counter]:
+def get_counter(name: str, tags: Optional[Mapping[str, Union[str, int, float]]] = None) -> Optional[Counter]:
     """
     Get a counter from the global registry by its name
 
@@ -117,7 +120,7 @@ def add_gauge(gauge: Gauge) -> None:
     add_meter(gauge)
 
 
-def get_gauge(name: str, tags: Optional[dict[str, Union[str, int, float]]] = None) -> Optional[Gauge]:
+def get_gauge(name: str, tags: Optional[Mapping[str, Union[str, int, float]]] = None) -> Optional[Gauge]:
     """
     Get a gauge from the global registry by its name
 
@@ -151,7 +154,7 @@ def add_timer(timer: Timer) -> None:
     add_meter(timer)
 
 
-def get_timer(name: str, tags: Optional[dict[str, Union[str, int, float]]] = None) -> Optional[Timer]:
+def get_timer(name: str, tags: Optional[Mapping[str, Union[str, int, float]]] = None) -> Optional[Timer]:
     """
     Get a timer from the global registry by its name
 
