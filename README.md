@@ -150,6 +150,28 @@ def main() -> None:
 
 When using this meter via a decorator, the meter gets added to the global `registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
 
+By default, timer meters will measure time in nanoseconds, this can be changed via the `unit` parameter using the `TimerUnits` enum in the utils module
+
+```python
+import time
+
+from pylemetry.meters import Timer
+from pylemetry.utils import TimerUnits
+
+
+timer_s = Timer("example_s", TimerUnits.SECONDS)
+timer_ms = Timer("example_ms", TimerUnits.MILLISECONDS)
+
+with timer_s.time():
+    time.sleep(1)
+    
+with timer_ms.time():
+    time.sleep(1)
+
+timer_s.get_mean_tick_time()  # 1
+timer_ms.get_mean_tick_time()  # 1000
+```
+
 ## Tags
 
 When creating a meter you can assign a set of tags to it as key-value pairs. The value must be one of either `str`, `int`, or `float`.
