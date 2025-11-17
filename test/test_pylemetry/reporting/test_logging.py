@@ -17,10 +17,10 @@ from pylemetry.reporting import LoggingReporter, ReportingType
 def test_logging_reporter_logs_messages(caplog, level: int) -> None:
     logger = logging.getLogger(__name__)
 
-    counter = Counter()
+    counter = Counter("test_counter")
     counter += 1
 
-    registry.add_counter("test_counter", counter)
+    registry.add_counter(counter)
 
     with caplog.at_level(level):
         reporter = LoggingReporter(10, logger, level, ReportingType.CUMULATIVE)
@@ -31,10 +31,10 @@ def test_logging_reporter_logs_messages(caplog, level: int) -> None:
 
 
 def test_logging_reporter_loguru_compatibility() -> None:
-    counter = Counter()
+    counter = Counter("test_counter")
     counter += 1
 
-    registry.add_counter("test_counter", counter)
+    registry.add_counter(counter)
 
     with Logot().capturing(capturer=LoguruCapturer) as logot:
         reporter = LoggingReporter(10, loguru_logger, logging.INFO, ReportingType.CUMULATIVE)
@@ -47,18 +47,18 @@ def test_logging_reporter_loguru_compatibility() -> None:
 def test_logging_default_message_formats(caplog) -> None:
     logger = logging.getLogger(__name__)
 
-    counter = Counter()
+    counter = Counter("test_counter")
     counter += 1
 
-    gauge = Gauge()
+    gauge = Gauge("test_gauge")
     gauge += 1
 
-    timer = Timer()
+    timer = Timer("test_timer")
     timer.ticks = [1, 2, 3, 4, 5]
 
-    registry.add_counter("test_counter", counter)
-    registry.add_gauge("test_gauge", gauge)
-    registry.add_timer("test_timer", timer)
+    registry.add_counter(counter)
+    registry.add_gauge(gauge)
+    registry.add_timer(timer)
 
     with caplog.at_level(logging.INFO):
         reporter = LoggingReporter(10, logger, logging.INFO, ReportingType.CUMULATIVE)
@@ -72,18 +72,18 @@ def test_logging_default_message_formats(caplog) -> None:
 def test_logging_configure_message_format_all_meters(caplog) -> None:
     logger = logging.getLogger(__name__)
 
-    counter = Counter()
+    counter = Counter("test_counter")
     counter += 1
 
-    gauge = Gauge()
+    gauge = Gauge("test_gauge")
     gauge += 1
 
-    timer = Timer()
+    timer = Timer("test_timer")
     timer.ticks = [1, 2, 3, 4, 5]
 
-    registry.add_counter("test_counter", counter)
-    registry.add_gauge("test_gauge", gauge)
-    registry.add_timer("test_timer", timer)
+    registry.add_counter(counter)
+    registry.add_gauge(gauge)
+    registry.add_timer(timer)
 
     with caplog.at_level(logging.INFO):
         reporter = LoggingReporter(10, logger, logging.INFO, ReportingType.CUMULATIVE)
@@ -98,18 +98,18 @@ def test_logging_configure_message_format_all_meters(caplog) -> None:
 def test_logging_configure_message_format_specific_meter_type(caplog) -> None:
     logger = logging.getLogger(__name__)
 
-    counter = Counter()
+    counter = Counter("test_counter")
     counter += 1
 
-    gauge = Gauge()
+    gauge = Gauge("test_gauge")
     gauge += 1
 
-    timer = Timer()
+    timer = Timer("test_timer")
     timer.ticks = [1, 2, 3, 4, 5]
 
-    registry.add_counter("test_counter", counter)
-    registry.add_gauge("test_gauge", gauge)
-    registry.add_timer("test_timer", timer)
+    registry.add_counter(counter)
+    registry.add_gauge(gauge)
+    registry.add_timer(timer)
 
     with caplog.at_level(logging.INFO):
         reporter = LoggingReporter(10, logger, logging.INFO, ReportingType.CUMULATIVE)
@@ -124,10 +124,10 @@ def test_logging_configure_message_format_specific_meter_type(caplog) -> None:
 def test_logging_reporter_marks_meter_intervals() -> None:
     logger = logging.getLogger(__name__)
 
-    counter = Counter()
+    counter = Counter("test_counter")
     counter += 1
 
-    registry.add_counter("test_counter", counter)
+    registry.add_counter(counter)
 
     registry_counter = registry.get_counter("test_counter")
 

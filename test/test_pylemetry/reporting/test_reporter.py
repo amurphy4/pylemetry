@@ -17,10 +17,10 @@ def test_reporter_base_class_cant_flush() -> None:
 def test_reporter_flushing_on_timer(caplog) -> None:
     logger = logging.getLogger(__name__)
 
-    counter = Counter()
+    counter = Counter("test_counter")
     counter += 1
 
-    registry.add_counter("test_counter", counter)
+    registry.add_counter(counter)
 
     with caplog.at_level(logging.INFO):
         reporter = LoggingReporter(0.1, logger, logging.INFO, ReportingType.CUMULATIVE)
@@ -36,10 +36,10 @@ def test_reporter_flushing_on_timer(caplog) -> None:
 def test_reporter_context_manager(caplog) -> None:
     logger = logging.getLogger(__name__)
 
-    counter = Counter()
+    counter = Counter("test_counter")
     counter += 1
 
-    registry.add_counter("test_counter", counter)
+    registry.add_counter(counter)
 
     with caplog.at_level(logging.INFO):
         with LoggingReporter(0.1, logger, logging.INFO, ReportingType.CUMULATIVE) as reporter:
@@ -51,13 +51,13 @@ def test_reporter_context_manager(caplog) -> None:
         assert caplog.records[0].msg == "test_counter - 1.0"
 
 
-def test_reporter_context_manager_clear_registry_on_exit(caplog) -> None:
+def test_reporter_context_manager_clear_registry_on_exit() -> None:
     logger = logging.getLogger(__name__)
 
-    counter = Counter()
+    counter = Counter("test_counter")
     counter += 1
 
-    registry.add_counter("test_counter", counter)
+    registry.add_counter(counter)
 
     with LoggingReporter(0.1, logger, logging.INFO, ReportingType.CUMULATIVE):
         counter += 1
@@ -72,54 +72,77 @@ def test_reporter_context_manager_clear_registry_on_exit(caplog) -> None:
 
 def test_message_format_counter() -> None:
     message_format = (
-        "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}}}"
+        "{{'name': '{name}', 'type': '{type}', 'value': {value}, "
+        "'min': {min}, 'max': {max}, 'average': {avg}, 'tags': {tags}}}"
     )
 
-    counter = Counter()
+    counter = Counter("test_counter")
     counter += 10
 
-    message = Reporter.format_message(message_format, "test_counter", counter, False)
+    message = Reporter(1.0).format_message(message_format, counter, False)
 
     assert (
-        message
-        == "{'name': 'test_counter', 'type': 'counter', 'value': 10.0, 'min': 10.0, 'max': 10.0, 'average': 10.0}"
+        message == "{'name': 'test_counter', 'type': 'counter', 'value': 10.0, "
+        "'min': 10.0, 'max': 10.0, 'average': 10.0, 'tags': {}}"
     )
 
 
 def test_message_format_gauge() -> None:
     message_format = (
-        "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, 'max': {max}, 'average': {avg}}}"
+        "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'min': {min}, "
+        "'max': {max}, 'average': {avg}, 'tags': {tags}}}"
     )
 
-    gauge = Gauge()
+    gauge = Gauge("test_gauge")
     gauge += 10
 
-    message = Reporter.format_message(message_format, "test_gauge", gauge, False)
+    message = Reporter(1.0).format_message(message_format, gauge, False)
 
     assert (
-        message == "{'name': 'test_gauge', 'type': 'gauge', 'value': 10.0, 'min': 10.0, 'max': 10.0, 'average': 10.0}"
+        message == "{'name': 'test_gauge', 'type': 'gauge', 'value': 10.0, "
+        "'min': 10.0, 'max': 10.0, 'average': 10.0, 'tags': {}}"
     )
 
 
 def test_message_format_timer() -> None:
     message_format = (
         "{{'name': '{name}', 'type': '{type}', 'value': {value}, 'count': {count}, 'min': {min}, "
-        "'max': {max}, 'average': {avg}}}"
+        "'max': {max}, 'average': {avg}, 'tags': {tags}}}"
     )
 
-    timer = Timer()
+    timer = Timer("test_timer")
     timer.ticks = [1, 2, 3, 4, 5]
 
-    message = Reporter.format_message(message_format, "test_timer", timer, False)
+    message = Reporter(1.0).format_message(message_format, timer, False)
 
     assert (
-        message
-        == "{'name': 'test_timer', 'type': 'timer', 'value': 15, 'count': 5, 'min': 1, 'max': 5, 'average': 3.0}"
+        message == "{'name': 'test_timer', 'type': 'timer', 'value': 15, "
+        "'count': 5, 'min': 1, 'max': 5, 'average': 3.0, 'tags': {}}"
     )
+
+
+def test_message_format_with_tags() -> None:
+    message_format = "{{'name': '{name}', 'tags': {tags}}}"
+
+    timer = Timer("test_timer", tags={"tag_1": "value", "tag_2": 2, "tag_3": 1.5})
+
+    message = Reporter(1.0).format_message(message_format, timer, False)
+
+    assert message == "{'name': 'test_timer', 'tags': {'tag_1': 'value', 'tag_2': 2, 'tag_3': 1.5}}"
+
+
+def test_message_format_with_universal_tags() -> None:
+    message_format = "{{'name': '{name}', 'tags': {tags}}}"
+
+    timer = Timer("test_timer", tags={"tag_2": 2, "tag_3": 1.5})
+
+    message = Reporter(1.0, universal_tags={"tag_1": "value"}).format_message(message_format, timer, False)
+
+    assert message == "{'name': 'test_timer', 'tags': {'tag_1': 'value', 'tag_2': 2, 'tag_3': 1.5}}"
 
 
 def test_message_format_unsupported_meter() -> None:
     with pytest.raises(ValueError) as exec_info:
-        Reporter.format_message("Hello World!", "test_meter", "fake meter", False)  # type: ignore
+        Reporter(1.0).format_message("Hello World!", "fake meter", False)  # type: ignore
 
     assert exec_info.value.args[0] == "Unsupported meter of type <class 'str'>"

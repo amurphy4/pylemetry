@@ -21,7 +21,7 @@ from pylemetry.meters import Counter
 
 
 def some_method() -> None:
-    counter = Counter()
+    counter = Counter("example")
 
     for _ in range(100):
         counter.add()  # counter += 1 is also supported
@@ -70,9 +70,9 @@ from pylemetry.meters import Gauge
 
 
 def some_method() -> None:
-    gauge = Gauge()
+    gauge = Gauge("sample_gauge")
     
-    registry.add_gauge("sample_gauge", gauge)
+    registry.add_gauge(gauge)
 ```
 
 The `Gauge` supports incrementing, decrementing, and setting a value directly
@@ -104,7 +104,7 @@ from pylemetry.meters import Timer
 
 
 def some_method() -> None:
-    timer = Timer()
+    timer = Timer("example")
 
     for _ in range(100):
         with timer.time():
@@ -150,6 +150,54 @@ def main() -> None:
 
 When using this meter via a decorator, the meter gets added to the global `registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
 
+By default, timer meters will measure time in nanoseconds, this can be changed via the `unit` parameter using the `TimerUnits` enum in the utils module
+
+```python
+import time
+
+from pylemetry.meters import Timer
+from pylemetry.utils import TimerUnits
+
+
+timer_s = Timer("example_s", TimerUnits.SECONDS)
+timer_ms = Timer("example_ms", TimerUnits.MILLISECONDS)
+
+with timer_s.time():
+    time.sleep(1)
+    
+with timer_ms.time():
+    time.sleep(1)
+
+timer_s.get_mean_tick_time()  # 1
+timer_ms.get_mean_tick_time()  # 1000
+```
+
+## Tags
+
+When creating a meter you can assign a set of tags to it as key-value pairs. The value must be one of either `str`, `int`, or `float`.
+When using a decorator to create a meter, you can use a custom format for the value to extract values out of the method's args and kwargs
+
+In order to allow for multiple meters with the same name and different tags, the name in the registry gets mangled with the tags to produce a unique name,
+as a result when trying to get the meter from the registry you will need to provide both its name and its tags.
+
+```python
+from pylemetry import registry
+from pylemetry.decorators import time
+
+
+@time("example_timer", tags={"tag_1": "args[0]", "tag_2": "kwargs[param_2]", "tag_3": "some value"})
+def some_method(param_1: int, param_2: int) -> None:
+    ...
+
+
+def main() -> None:
+    for _ in range(100):
+        some_method(1, param_2=2)
+
+    timer = registry.get_timer("example_timer", {"tag_1": 1, "tag_2": 2, "tag_3": "some value"})
+    timer.get_tags()  # {"tag_1": 1, "tag_2": 2, "tag_3": "some value"}
+```
+
 ## The Registry
 
 Pylemetry maintains a global registry of meters, allowing you to share a meter across multiple files, or reference metrics from a central location.
@@ -160,13 +208,13 @@ from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, Timer
 
 
-counter = Counter()
-gauge = Gauge()
-timer = Timer()
+counter = Counter("example")
+gauge = Gauge("example")
+timer = Timer("example")
 
-registry.add_counter("example", counter)
-registry.add_gauge("example", gauge)
-registry.add_timer("example", timer)
+registry.add_counter(counter)
+registry.add_gauge(gauge)
+registry.add_timer(timer)
 ```
 
 Each meter type has an `add_meter`, `get_meter` and `remove_meter` method to manage meters in the `registry`, each requiring a unique meter name.
@@ -177,9 +225,9 @@ from pylemetry import registry
 from pylemetry.meters import Counter, MeterType
 
 
-counter = Counter()
+counter = Counter("example")
 
-registry.add_meter("example", counter, MeterType.COUNTER)
+registry.add_meter(counter, MeterType.COUNTER)
 registry.get_meter("example", MeterType.COUNTER)
 registry.remove_meter("example", MeterType.COUNTER)
 registry.get_meter("example", MeterType.COUNTER)  # None
@@ -203,6 +251,7 @@ The message format allows for substitutions for metric values with the following
 | max              | Maximum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `max_tick_time` for `Timer` meters       |
 | avg              | Mean average value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `mean_tick_time` for `Timer` meters |
 | type             | Type of the meter (`counter`, `gauge`, or `timer`)                                                                                            |
+| tags             | The tags associated with the meter                                                                                                            |
 
 As an example, a `Counter` meter named `sample_counter` with a value of 10
 ```python

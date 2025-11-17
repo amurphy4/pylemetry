@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 from typing_extensions import Self
 from types import TracebackType
 
@@ -9,11 +9,21 @@ from pylemetry.meters import Counter, Gauge, Timer, Meter
 
 
 class Reporter:
-    def __init__(self, interval: float, clear_registry_on_exit: bool = False) -> None:
+    def __init__(
+        self,
+        interval: float,
+        clear_registry_on_exit: bool = False,
+        universal_tags: Optional[dict[str, Union[str, int, float]]] = None,
+    ) -> None:
         self.interval = interval
         self.__timer_thread: Optional[threading.Timer] = None
         self.running = False
         self.clear_registry_on_exit = clear_registry_on_exit
+
+        if universal_tags is None:
+            universal_tags = {}
+
+        self.universal_tags = universal_tags
 
     def __enter__(self) -> Self:
         self.start()
@@ -62,8 +72,7 @@ class Reporter:
         self.flush()
         self.running = False
 
-    @staticmethod
-    def format_message(message_format: str, meter_name: str, meter: Meter, since_last_interval: bool = False) -> str:
+    def format_message(self, message_format: str, meter: Meter, since_last_interval: bool = False) -> str:
         """
         Format output messages with the following format options:
             - name: Name of the meter being logged
@@ -72,9 +81,9 @@ class Reporter:
             - max: Counter or Gauge value, or Timer maximum tick value
             - avg: Counter or Gauge value, or Timer mean tick value
             - type: Meter type
+            - tags: The tags associated with the meter
 
         :param message_format: Message format string
-        :param meter_name: Name of the meter to be output
         :param meter: Meter to be output
         :param since_last_interval: If true, values since the last interval will be used. If false, the full value
         will be used
@@ -83,23 +92,25 @@ class Reporter:
 
         if isinstance(meter, Timer):
             message = message_format.format(
-                name=meter_name,
+                name=meter.name,
                 value=meter.get_value(since_last_interval),
                 count=meter.get_count(since_last_interval),
                 min=meter.get_min_tick_time(since_last_interval),
                 max=meter.get_max_tick_time(since_last_interval),
                 avg=meter.get_mean_tick_time(since_last_interval),
                 type=meter.meter_type.value,
+                tags={**self.universal_tags, **meter.get_tags()},
             )
         elif isinstance(meter, Counter) or isinstance(meter, Gauge):
             message = message_format.format(
-                name=meter_name,
+                name=meter.name,
                 value=meter.get_value(since_last_interval),
                 count=meter.get_value(since_last_interval),
                 min=meter.get_value(since_last_interval),
                 max=meter.get_value(since_last_interval),
                 avg=meter.get_value(since_last_interval),
                 type=meter.meter_type.value,
+                tags={**self.universal_tags, **meter.get_tags()},
             )
         else:
             raise ValueError(f"Unsupported meter of type {type(meter)}")
