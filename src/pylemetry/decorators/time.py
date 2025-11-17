@@ -6,6 +6,7 @@ from functools import wraps
 
 from pylemetry import registry
 from pylemetry.meters import Timer
+from pylemetry.utils import TimerUnits
 
 
 P = ParamSpec("P")
@@ -13,13 +14,16 @@ R = TypeVar("R", covariant=True)
 
 
 def time(
-    name: Optional[str] = None, tags: Optional[dict[str, Union[str, int, float]]] = None
+    name: Optional[str] = None,
+    unit: TimerUnits = TimerUnits.NANOSECONDS,
+    tags: Optional[dict[str, Union[str, int, float]]] = None,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """
     Decorator to time the invocations of a given callable. Creates a Timer meter in the Registry with either the
     provided name or the fully qualified name of the callable object as the metric name.
 
     :param name: Name of the meter to create, if None the function name is used
+    :param unit: Unit of time to measure in
     :param tags: Optional key-value pairs of tags for this meter
     :return: Result of the wrapped function
     """
@@ -68,7 +72,7 @@ def time(
             _timer = registry.get_timer(time_name, tags=_tags)
 
             if not _timer:
-                _timer = Timer(time_name, tags=_tags)
+                _timer = Timer(time_name, unit=unit, tags=_tags)
                 registry.add_timer(_timer)
 
             with _timer.time():

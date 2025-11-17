@@ -5,11 +5,19 @@ import time
 from contextlib import contextmanager
 
 from pylemetry.meters.meter import Meter, MeterType
+from pylemetry.utils import TimerUnits
 
 
 class Timer(Meter):
-    def __init__(self, name: str, tags: Optional[dict[str, Union[str, int, float]]] = None) -> None:
+    def __init__(
+        self,
+        name: str,
+        unit: TimerUnits = TimerUnits.NANOSECONDS,
+        tags: Optional[dict[str, Union[str, int, float]]] = None,
+    ) -> None:
         super().__init__(MeterType.TIMER, name, tags)
+
+        self.unit = unit
 
         self.ticks: list[float] = []
 
@@ -29,14 +37,14 @@ class Timer(Meter):
         Context manager to time in seconds a code block and add the result to the internal ticks list
         """
 
-        start_time = time.perf_counter()
+        start_time = time.perf_counter_ns()
 
         try:
             yield
         finally:
-            end_time = time.perf_counter()
+            end_time = time.perf_counter_ns()
 
-            self.tick(end_time - start_time)
+            self.tick((end_time - start_time) / self.unit.conversion_from_ns())
 
     def get_value(self, since_last_interval: bool = False) -> int:
         """

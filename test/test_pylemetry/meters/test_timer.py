@@ -2,6 +2,7 @@ import pytest
 import time
 
 from pylemetry.meters import Timer
+from pylemetry.utils import TimerUnits
 
 
 def test_timer_count_starts_at_0() -> None:
@@ -22,7 +23,7 @@ def test_timer_tick(value: float) -> None:
 
 
 def test_time() -> None:
-    timer = Timer("test_timer")
+    timer = Timer("test_timer", unit=TimerUnits.SECONDS)
 
     with timer.time():
         time.sleep(0.25)
@@ -30,6 +31,17 @@ def test_time() -> None:
     assert timer.get_count() == 1
     assert 0.25 <= timer.get_value() < 0.5
     assert 0.25 <= timer.get_mean_tick_time() < 0.5
+
+
+def test_time_milliseconds() -> None:
+    timer = Timer("test_timer", unit=TimerUnits.MILLISECONDS)
+
+    with timer.time():
+        time.sleep(0.25)
+
+    assert timer.get_count() == 1
+    assert 250 <= timer.get_value() < 500
+    assert 250 <= timer.get_mean_tick_time() < 500
 
 
 def test_get_mean_tick_time() -> None:

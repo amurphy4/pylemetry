@@ -5,9 +5,10 @@ import pytest
 from pylemetry import registry
 from pylemetry.decorators import time
 from pylemetry.meters import Timer, MeterType
+from pylemetry.utils import TimerUnits
 
 
-@time()
+@time(unit=TimerUnits.SECONDS)
 def mock_function(message: str) -> str:
     return f"A function decorated with the timer decorator with message {message}"
 
@@ -86,7 +87,7 @@ def test_time_decorator_with_tags_raises_error_args_index() -> None:
 def test_time_decorator_with_tags_raises_error_args_invalid_type() -> None:
     @time(tags={"tag_1": "args[0]"})
     def mock(value: dict[str, str]) -> None:
-        pass
+        print(value)
 
     with pytest.raises(ValueError) as exec_info:
         mock({"key": "value"})
@@ -108,7 +109,7 @@ def test_time_decorator_with_tags_raises_error_kwargs_non_existent() -> None:
 def test_time_decorator_with_tags_raises_error_kwargs_invalid_type() -> None:
     @time(tags={"tag_1": "kwargs[value]"})
     def mock(value: dict[str, str]) -> None:
-        pass
+        print(value)
 
     with pytest.raises(ValueError) as exec_info:
         mock(value={"key": "value"})
@@ -122,7 +123,11 @@ def test_time_decorator_with_tags_raises_error_kwargs_invalid_type() -> None:
 def test_time_decorator_updates_existing_timer_with_tags(call_count: int) -> None:
     timer_name = "mock_function"
 
-    @time(name=timer_name, tags={"tag_1": "args[0]", "tag_2": "kwargs[value_2]", "tag_3": "another_value"})
+    @time(
+        name=timer_name,
+        unit=TimerUnits.SECONDS,
+        tags={"tag_1": "args[0]", "tag_2": "kwargs[value_2]", "tag_3": "another_value"},
+    )
     def mock(value: str, value_2: int) -> None:
         print(f"Mocked with '{value}' and '{value_2}'")
 
