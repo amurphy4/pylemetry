@@ -1,9 +1,10 @@
 name: Configure uv
+description: Configure uv for running within pipelines
 runs:
   using: composite
   steps:
     - name: Install uv
-      uses: astral-sh/setup-uv@v6
+      uses: astral-sh/setup-uv@v10.2.0
 
     - name: Install dependencies
       run: uv sync --locked --dev
