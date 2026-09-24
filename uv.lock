@@ -257,7 +257,7 @@ wheels = [
 
 [[package]]
 name = "pylemetry"
-version = "1.2.0"
+version = "1.2.1a1"
 source = { editable = "." }
 dependencies = [
     { name = "typing-extensions" },
