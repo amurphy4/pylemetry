@@ -1,5 +1,5 @@
 import logging
-from typing import Protocol, ParamSpec, TypeVar, Optional, Union
+from typing import ParamSpec, Protocol, TypeVar
 
 from pylemetry import registry
 from pylemetry.meters import MeterType
@@ -30,7 +30,7 @@ class LoggingReporter(Reporter):
         level: int,
         _type: ReportingType,
         clear_registry_on_exit: bool = False,
-        universal_tags: Optional[dict[str, Union[str, int, float]]] = None,
+        universal_tags: dict[str, str | int | float] | None = None,
     ) -> None:
         super().__init__(interval, clear_registry_on_exit, universal_tags)
 
@@ -44,7 +44,7 @@ class LoggingReporter(Reporter):
             MeterType.TIMER: "{name} [{type}] -- {value}",
         }
 
-    def configure_message_format(self, message_format: str, meter_type: Optional[MeterType] = None):
+    def configure_message_format(self, message_format: str, meter_type: MeterType | None = None):
         if not meter_type:
             for _type in list(MeterType):
                 self.message_formats[_type] = message_format

@@ -60,7 +60,7 @@ explicit_package_bases = true
 line-length = 120
 
 [tool.ruff.lint]
-select = ["E", "F", "B"]
+select = ["ARG", "B", "E", "F", "I", "N", "RUF", "TID", "UP", "W"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=pylemetry --cov-report=html"

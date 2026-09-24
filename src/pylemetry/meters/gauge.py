@@ -1,10 +1,8 @@
-from typing import Union, Optional
-
 from pylemetry.meters.meter import Meter, MeterType
 
 
 class Gauge(Meter):
-    def __init__(self, name: str, tags: Optional[dict[str, Union[str, int, float]]] = None) -> None:
+    def __init__(self, name: str, tags: dict[str, str | int | float] | None = None) -> None:
         super().__init__(MeterType.GAUGE, name, tags)
 
     def set_value(self, value: float):

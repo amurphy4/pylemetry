@@ -1,7 +1,7 @@
 import pytest
 
 from pylemetry import registry
-from pylemetry.meters import Counter, Gauge, Timer, MeterType
+from pylemetry.meters import Counter, Gauge, MeterType, Timer
 
 
 def test_add_counter() -> None:

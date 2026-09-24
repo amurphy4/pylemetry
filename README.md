@@ -37,13 +37,11 @@ from pylemetry.decorators import count
 
 
 @count()
-def some_method() -> None:
-    ...
+def some_method() -> None: ...
 
 
 @count("named_counter")
-def another_method() -> None:
-    ...
+def another_method() -> None: ...
 
 
 def main() -> None:
@@ -122,20 +120,18 @@ from pylemetry.decorators import time
 
 
 @time()
-def some_method() -> None:
-    ...
+def some_method() -> None: ...
 
 
 @time("named_timer")
-def another_method() -> None:
-    ...
+def another_method() -> None: ...
 
 
 def main() -> None:
     for _ in range(100):
         some_method()
         another_method()
-        
+
     timer = registry.get_timer("some_method")
     timer.get_count()  # 100
     timer.get_value()  # Sum total execution time of the some_method function
@@ -186,8 +182,7 @@ from pylemetry.decorators import time
 
 
 @time("example_timer", tags={"tag_1": "args[0]", "tag_2": "kwargs[param_2]", "tag_3": "some value"})
-def some_method(param_1: int, param_2: int) -> None:
-    ...
+def some_method(param_1: int, param_2: int) -> None: ...
 
 
 def main() -> None:

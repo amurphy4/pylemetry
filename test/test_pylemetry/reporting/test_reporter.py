@@ -5,7 +5,7 @@ import pytest
 
 from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, Timer
-from pylemetry.reporting import Reporter, LoggingReporter, ReportingType
+from pylemetry.reporting import LoggingReporter, Reporter, ReportingType
 
 
 def test_reporter_base_class_cant_flush() -> None:

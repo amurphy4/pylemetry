@@ -1,5 +1,6 @@
-import pytest
 import time
+
+import pytest
 
 from pylemetry.meters import Timer
 from pylemetry.utils import TimerUnits

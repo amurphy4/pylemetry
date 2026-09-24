@@ -1,7 +1,5 @@
-from typing import Generator, Union, Optional
-
 import time
-
+from collections.abc import Generator
 from contextlib import contextmanager
 
 from pylemetry.meters.meter import Meter, MeterType
@@ -13,7 +11,7 @@ class Timer(Meter):
         self,
         name: str,
         unit: TimerUnits = TimerUnits.NANOSECONDS,
-        tags: Optional[dict[str, Union[str, int, float]]] = None,
+        tags: dict[str, str | int | float] | None = None,
     ) -> None:
         super().__init__(MeterType.TIMER, name, tags)
 
@@ -32,7 +30,7 @@ class Timer(Meter):
             self.ticks.append(tick)
 
     @contextmanager
-    def time(self) -> Generator[None, None, None]:
+    def time(self) -> Generator[None]:
         """
         Context manager to time in seconds a code block and add the result to the internal ticks list
         """

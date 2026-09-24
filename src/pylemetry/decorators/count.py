@@ -1,19 +1,17 @@
 import re
-
-from typing import Callable, Optional, ParamSpec, TypeVar, Union
-
+from collections.abc import Callable
 from functools import wraps
+from typing import ParamSpec, TypeVar
 
 from pylemetry import registry
 from pylemetry.meters import Counter
-
 
 P = ParamSpec("P")
 R = TypeVar("R", covariant=True)
 
 
 def count(
-    name: Optional[str] = None, tags: Optional[dict[str, Union[str, int, float]]] = None
+    name: str | None = None, tags: dict[str, str | int | float] | None = None
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """
     Decorator to count the number of invocations of a given callable. Creates a Counter meter in the Registry
@@ -29,7 +27,7 @@ def count(
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             counter_name = f.__qualname__ if name is None else name
 
-            _tags: dict[str, Union[str, int, float]] = {}
+            _tags: dict[str, str | int | float] = {}
 
             if tags:
                 for key, value in tags.items():

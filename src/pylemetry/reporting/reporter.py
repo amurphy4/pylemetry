@@ -1,11 +1,10 @@
-from typing import Optional, Union
-from typing_extensions import Self
+import threading
 from types import TracebackType
 
-import threading
+from typing_extensions import Self
 
 from pylemetry import registry
-from pylemetry.meters import Counter, Gauge, Timer, Meter
+from pylemetry.meters import Counter, Gauge, Meter, Timer
 
 
 class Reporter:
@@ -13,10 +12,10 @@ class Reporter:
         self,
         interval: float,
         clear_registry_on_exit: bool = False,
-        universal_tags: Optional[dict[str, Union[str, int, float]]] = None,
+        universal_tags: dict[str, str | int | float] | None = None,
     ) -> None:
         self.interval = interval
-        self.__timer_thread: Optional[threading.Timer] = None
+        self.__timer_thread: threading.Timer | None = None
         self.running = False
         self.clear_registry_on_exit = clear_registry_on_exit
 
@@ -31,7 +30,7 @@ class Reporter:
         return self
 
     def __exit__(
-        self, exc_type: Optional[type[BaseException]], exc_val: Optional[BaseException], exc_tb: Optional[TracebackType]
+        self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None
     ):
         self.stop()
 
