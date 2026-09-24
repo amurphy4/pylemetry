@@ -1,7 +1,5 @@
-from collections.abc import Generator
-
 import time
-
+from collections.abc import Generator
 from contextlib import contextmanager
 
 from pylemetry.meters.meter import Meter, MeterType

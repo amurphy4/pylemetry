@@ -4,7 +4,7 @@ import pytest
 
 from pylemetry import registry
 from pylemetry.decorators import time
-from pylemetry.meters import Timer, MeterType
+from pylemetry.meters import MeterType, Timer
 from pylemetry.utils import TimerUnits
 
 

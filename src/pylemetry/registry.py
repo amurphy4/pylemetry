@@ -1,6 +1,6 @@
 from collections.abc import Mapping
 
-from pylemetry.meters import Counter, Gauge, Timer, Meter, MeterType
+from pylemetry.meters import Counter, Gauge, Meter, MeterType, Timer
 
 METERS: dict[MeterType, dict[str, Meter]] = {
     MeterType.COUNTER: {},

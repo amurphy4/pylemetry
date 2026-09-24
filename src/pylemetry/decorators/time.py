@@ -1,14 +1,11 @@
 import re
-
 from collections.abc import Callable
-from typing import ParamSpec, TypeVar
-
 from functools import wraps
+from typing import ParamSpec, TypeVar
 
 from pylemetry import registry
 from pylemetry.meters import Timer
 from pylemetry.utils import TimerUnits
-
 
 P = ParamSpec("P")
 R = TypeVar("R", covariant=True)

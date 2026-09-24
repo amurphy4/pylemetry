@@ -1,5 +1,5 @@
 import logging
-from typing import Protocol, ParamSpec, TypeVar
+from typing import ParamSpec, Protocol, TypeVar
 
 from pylemetry import registry
 from pylemetry.meters import MeterType

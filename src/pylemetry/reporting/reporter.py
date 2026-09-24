@@ -1,10 +1,10 @@
-from typing_extensions import Self
+import threading
 from types import TracebackType
 
-import threading
+from typing_extensions import Self
 
 from pylemetry import registry
-from pylemetry.meters import Counter, Gauge, Timer, Meter
+from pylemetry.meters import Counter, Gauge, Meter, Timer
 
 
 class Reporter:

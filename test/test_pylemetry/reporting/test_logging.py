@@ -7,7 +7,7 @@ from logot.loguru import LoguruCapturer
 from loguru import logger as loguru_logger
 
 from pylemetry import registry
-from pylemetry.meters import Counter, Gauge, Timer, MeterType
+from pylemetry.meters import Counter, Gauge, MeterType, Timer
 from pylemetry.reporting import LoggingReporter, ReportingType
 
 
