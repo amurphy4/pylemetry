@@ -1,5 +1,11 @@
 name: Bump version
 description: Bump the project version and create a pull request
+
+inputs:
+  github-token:
+    description: GitHub token
+    required: true
+
 runs:
   using: composite
   steps:
@@ -23,4 +29,4 @@ runs:
       run: gh pr create -B main -H ${{ steps.bump_version.outputs.branch_name }} --title "Update version to v$(uv version --short)" --body 'Created by GitHub Actions in the Release pipeline'
       shell: bash
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}

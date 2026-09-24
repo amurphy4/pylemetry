@@ -100,3 +100,5 @@ jobs:
       - name: Bump Version
         if: ${{ !inputs.dry-run }}
         uses: ./.github/actions/bump-version
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
