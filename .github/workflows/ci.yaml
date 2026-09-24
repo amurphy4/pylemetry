@@ -1,13 +1,9 @@
 name: Test, Build, and Publish
 
 on:
-  push:
-    branches:
-      - develop
   pull_request:
     branches:
       - main
-      - develop
 
 jobs:
   lint:
@@ -15,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7.0.1
 
       - uses: ./.github/actions/configure-uv
 
-      - uses: astral-sh/ruff-action@v3
+      - uses: astral-sh/ruff-action@v4.1.0
 
       - name: Type Checks
         run: uv run mypy .
@@ -29,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7.0.1
 
       - uses: ./.github/actions/configure-uv
 
@@ -43,7 +39,7 @@ jobs:
     needs: [lint, test]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7.0.1
 
       - uses: ./.github/actions/configure-uv
 
