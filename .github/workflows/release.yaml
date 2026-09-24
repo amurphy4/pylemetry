@@ -6,6 +6,13 @@ on:
       dry-run:
         description: Run as a dry-run
         type: boolean
+      bump-to-stable:
+        description: Bump the version to the next stable version
+        type: boolean
+        default: true
+      override-version:
+        description: Override the current version and set as the release version
+        type: string
 
 jobs:
   lint:
@@ -49,6 +56,18 @@ jobs:
           ssh-key: ${{ secrets.DEPLOY_KEY }}
 
       - uses: ./.github/actions/configure-uv
+
+      - name: Set release version
+        if: ${{ inputs.bump-to-stable || inputs.override-version != '' }}
+        run: |
+          if [[ $OVERRIDE_VERSION != '' ]]; then
+            uv version $OVERRIDE_VERSION;
+          elif $BUMP_TO_STABLE; then
+            uv version --bump stable
+          fi;
+        env:
+          BUMP_TO_STABLE: ${{ inputs.bump-to-stable }}
+          OVERRIDE_VERSION: ${{ inputs.override-version }}
 
       - name: Get version from uv
         id: version
