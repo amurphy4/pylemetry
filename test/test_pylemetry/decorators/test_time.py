@@ -1,5 +1,3 @@
-from typing import Union
-
 import pytest
 
 from pylemetry import registry
@@ -131,7 +129,7 @@ def test_time_decorator_updates_existing_timer_with_tags(call_count: int) -> Non
     def mock(value: str, value_2: int) -> None:
         print(f"Mocked with '{value}' and '{value_2}'")
 
-    tags: dict[str, Union[str, int]] = {"tag_1": "Hello World!", "tag_2": 2, "tag_3": "another_value"}
+    tags: dict[str, str | int] = {"tag_1": "Hello World!", "tag_2": 2, "tag_3": "another_value"}
 
     assert registry.get_timer(timer_name, tags=tags) is None
 
