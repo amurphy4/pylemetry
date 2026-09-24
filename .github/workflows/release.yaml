@@ -89,13 +89,14 @@ jobs:
 
       - name: GitHub Release
         if: ${{ !inputs.dry-run }}
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag: ${{ steps.version.outputs.version }}
           name: ${{ steps.version.outputs.version }}
           artifacts: "dist/pylemetry-*.tar.gz,dist/pylemetry-*.whl"
+          generateReleaseNotes: true
 
       - name: Bump Version
         if: ${{ !inputs.dry-run }}
