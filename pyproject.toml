@@ -50,6 +50,7 @@ build-backend = "uv_build"
 [tool.mypy]
 mypy_path = "./src"
 explicit_package_bases = true
+strict = true
 
 [tool.ruff]
 line-length = 120

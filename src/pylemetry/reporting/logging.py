@@ -1,25 +1,22 @@
 import logging
-from typing import ParamSpec, Protocol, TypeVar
+from typing import Protocol
 
 from pylemetry import registry
 from pylemetry.meters import MeterType
 from pylemetry.reporting.reporter import Reporter
 from pylemetry.reporting.reporting_type import ReportingType
 
-P = ParamSpec("P")
-R = TypeVar("R", covariant=True)
 
+class Loggable(Protocol):
+    def debug(self, msg: str) -> None: ...
 
-class Loggable(Protocol[P, R]):
-    def debug(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
+    def info(self, msg: str) -> None: ...
 
-    def info(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
+    def warning(self, msg: str) -> None: ...
 
-    def warning(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
+    def error(self, msg: str) -> None: ...
 
-    def error(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
-
-    def critical(self, msg: str, *args: P.args, **kwargs: P.kwargs) -> R: ...
+    def critical(self, msg: str) -> None: ...
 
 
 class LoggingReporter(Reporter):
@@ -44,7 +41,7 @@ class LoggingReporter(Reporter):
             MeterType.TIMER: "{name} [{type}] -- {value}",
         }
 
-    def configure_message_format(self, message_format: str, meter_type: MeterType | None = None):
+    def configure_message_format(self, message_format: str, meter_type: MeterType | None = None) -> None:
         if not meter_type:
             for _type in list(MeterType):
                 self.message_formats[_type] = message_format
