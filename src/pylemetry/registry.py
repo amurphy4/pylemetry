@@ -39,7 +39,7 @@ def add_meter(meter: Meter) -> None:
     METERS[meter.meter_type][combined_name] = meter
 
 
-def get_meter(name, meter_type: MeterType, tags: Mapping[str, str | int | float] | None = None) -> Meter | None:
+def get_meter(name: str, meter_type: MeterType, tags: Mapping[str, str | int | float] | None = None) -> Meter | None:
     """
     Get a meter from the global registry by its name
 
@@ -59,7 +59,7 @@ def get_meter(name, meter_type: MeterType, tags: Mapping[str, str | int | float]
     return METERS[meter_type].get(combined_name)
 
 
-def remove_meter(name, meter_type: MeterType) -> None:
+def remove_meter(name: str, meter_type: MeterType) -> None:
     """
     Remove a meter from the global registry
 

@@ -2,6 +2,7 @@ import logging
 import time
 
 import pytest
+from pytest import LogCaptureFixture
 
 from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, Timer
@@ -14,7 +15,7 @@ def test_reporter_base_class_cant_flush() -> None:
         reporter.flush()
 
 
-def test_reporter_flushing_on_timer(caplog) -> None:
+def test_reporter_flushing_on_timer(caplog: LogCaptureFixture) -> None:
     logger = logging.getLogger(__name__)
 
     counter = Counter("test_counter")
@@ -33,7 +34,7 @@ def test_reporter_flushing_on_timer(caplog) -> None:
         assert len(caplog.records) == 5
 
 
-def test_reporter_context_manager(caplog) -> None:
+def test_reporter_context_manager(caplog: LogCaptureFixture) -> None:
     logger = logging.getLogger(__name__)
 
     counter = Counter("test_counter")

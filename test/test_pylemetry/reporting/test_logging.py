@@ -5,6 +5,7 @@ import pytest
 from logot import Logot, logged
 from logot.loguru import LoguruCapturer
 from loguru import logger as loguru_logger
+from pytest import LogCaptureFixture
 
 from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, MeterType, Timer
@@ -14,7 +15,7 @@ from pylemetry.reporting import LoggingReporter, ReportingType
 @pytest.mark.parametrize(
     "level", [logging.DEBUG, logging.INFO, logging.WARNING, logging.WARN, logging.ERROR, logging.CRITICAL]
 )
-def test_logging_reporter_logs_messages(caplog, level: int) -> None:
+def test_logging_reporter_logs_messages(caplog: LogCaptureFixture, level: int) -> None:
     logger = logging.getLogger(__name__)
 
     counter = Counter("test_counter")
@@ -44,7 +45,7 @@ def test_logging_reporter_loguru_compatibility() -> None:
         logot.assert_logged(logged.info("Hello World!"))
 
 
-def test_logging_default_message_formats(caplog) -> None:
+def test_logging_default_message_formats(caplog: LogCaptureFixture) -> None:
     logger = logging.getLogger(__name__)
 
     counter = Counter("test_counter")
@@ -69,7 +70,7 @@ def test_logging_default_message_formats(caplog) -> None:
     assert "test_timer [timer] -- 15" in caplog.text
 
 
-def test_logging_configure_message_format_all_meters(caplog) -> None:
+def test_logging_configure_message_format_all_meters(caplog: LogCaptureFixture) -> None:
     logger = logging.getLogger(__name__)
 
     counter = Counter("test_counter")
@@ -95,7 +96,7 @@ def test_logging_configure_message_format_all_meters(caplog) -> None:
     assert "test_timer [timer] 15" in caplog.text
 
 
-def test_logging_configure_message_format_specific_meter_type(caplog) -> None:
+def test_logging_configure_message_format_specific_meter_type(caplog: LogCaptureFixture) -> None:
     logger = logging.getLogger(__name__)
 
     counter = Counter("test_counter")

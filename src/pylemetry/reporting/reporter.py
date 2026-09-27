@@ -1,7 +1,6 @@
 import threading
 from types import TracebackType
-
-from typing_extensions import Self
+from typing import Self
 
 from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, Meter, Timer
@@ -31,7 +30,7 @@ class Reporter:
 
     def __exit__(
         self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None
-    ):
+    ) -> None:
         self.stop()
 
         if self.clear_registry_on_exit:
