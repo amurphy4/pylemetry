@@ -3,7 +3,7 @@ name = "pylemetry"
 version = "1.2.3a1"
 description = "A Python metrics library"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11, <3.16"
 authors = [
     {name = "Alex Murphy", email = "alex@weaverslodge.co.uk"}
 ]
@@ -22,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 
     "Typing :: Typed",
 ]
@@ -36,11 +37,11 @@ Issues = "https://github.com/amurphy4/pylemetry/issues"
 [dependency-groups]
 dev = [
     "logot[loguru]>=1.5.1",
-    "loguru>=0.7.3",
-    "mypy==1.18.2",
-    "pytest==8.4.2",
-    "pytest-cov==7.0.0",
-    "ruff==0.13.3",
+    "loguru==0.7.3",
+    "mypy==1.20.1",
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "ruff==0.16.9",
 ]
 
 [build-system]
@@ -68,7 +69,7 @@ pythonpath = [
 ]
 
 [tool.tox]
-env_list = ["3.14", "3.13", "3.12", "3.11", "type", "lint"]
+env_list = ["3.15", "3.14", "3.13", "3.12", "3.11", "type", "lint"]
 
 [tool.tox.env_run_base]
 description = "Run tests in Python {base_python}"
