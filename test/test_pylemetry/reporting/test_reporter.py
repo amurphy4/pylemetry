@@ -142,6 +142,34 @@ def test_message_format_with_universal_tags() -> None:
     assert message == "{'name': 'test_timer', 'tags': {'tag_1': 'value', 'tag_2': 2, 'tag_3': 1.5}}"
 
 
+def test_message_format_with_verbose_tags() -> None:
+    message_format = "{{'name': '{name}', 'tags': {verbose_tags}}}"
+
+    timer = Timer("test_timer", tags={"tag_1": "value", "tag_2": 2, "tag_3": 1.5})
+
+    message = Reporter(1.0).format_message(message_format, timer, False)
+
+    assert (
+        message
+        == "{'name': 'test_timer', 'tags': [{'name': 'tag_1', 'value': 'value'}, {'name': 'tag_2', 'value': 2}, "
+        "{'name': 'tag_3', 'value': 1.5}]}"
+    )
+
+
+def test_message_format_with_verbose_universal_tags() -> None:
+    message_format = "{{'name': '{name}', 'tags': {verbose_tags}}}"
+
+    timer = Timer("test_timer", tags={"tag_2": 2, "tag_3": 1.5})
+
+    message = Reporter(1.0, universal_tags={"tag_1": "value"}).format_message(message_format, timer, False)
+
+    assert (
+        message
+        == "{'name': 'test_timer', 'tags': [{'name': 'tag_1', 'value': 'value'}, {'name': 'tag_2', 'value': 2}, "
+        "{'name': 'tag_3', 'value': 1.5}]}"
+    )
+
+
 def test_message_format_unsupported_meter() -> None:
     with pytest.raises(ValueError) as exec_info:
         Reporter(1.0).format_message("Hello World!", "fake meter", False)  # type: ignore
