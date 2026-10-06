@@ -1,6 +1,8 @@
 from enum import Enum
 from threading import Lock
 
+from pylemetry.utils.types import Tags
+
 
 class MeterType(Enum):
     COUNTER = "counter"
@@ -9,17 +11,17 @@ class MeterType(Enum):
 
 
 class Meter:
-    def __init__(self, meter_type: MeterType, name: str, tags: dict[str, str | int | float] | None = None) -> None:
+    def __init__(self, meter_type: MeterType, name: str, tags: Tags | None = None) -> None:
         self.lock = Lock()
         self.value = 0.0
         self.last_interval_value = 0.0
         self.meter_type = meter_type
         self.name = name
 
-        if not tags:
-            tags = {}
-
-        self.__tags = tags
+        if tags is None:
+            self._tags: Tags = {}
+        else:
+            self._tags = tags
 
     def get_value(self, since_last_interval: bool = False) -> float:
         """
@@ -43,5 +45,5 @@ class Meter:
         with self.lock:
             self.last_interval_value = self.value
 
-    def get_tags(self) -> dict[str, str | int | float]:
-        return self.__tags
+    def get_tags(self) -> Tags:
+        return self._tags

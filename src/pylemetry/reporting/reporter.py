@@ -4,6 +4,7 @@ from typing import Self
 
 from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, Meter, Timer
+from pylemetry.utils.types import Tags
 
 
 class Reporter:
@@ -11,7 +12,7 @@ class Reporter:
         self,
         interval: float,
         clear_registry_on_exit: bool = False,
-        universal_tags: dict[str, str | int | float] | None = None,
+        universal_tags: Tags | None = None,
     ) -> None:
         self.interval = interval
         self.__timer_thread: threading.Timer | None = None
@@ -97,7 +98,8 @@ class Reporter:
                 max=meter.get_max_tick_time(since_last_interval),
                 avg=meter.get_mean_tick_time(since_last_interval),
                 type=meter.meter_type.value,
-                tags={**self.universal_tags, **meter.get_tags()},
+                tags=self._format_tags(meter.get_tags()),
+                verbose_tags=self._format_tags(meter.get_tags(), verbose=True),
             )
         elif isinstance(meter, Counter) or isinstance(meter, Gauge):
             message = message_format.format(
@@ -108,9 +110,20 @@ class Reporter:
                 max=meter.get_value(since_last_interval),
                 avg=meter.get_value(since_last_interval),
                 type=meter.meter_type.value,
-                tags={**self.universal_tags, **meter.get_tags()},
+                tags=self._format_tags(meter.get_tags()),
+                verbose_tags=self._format_tags(meter.get_tags(), verbose=True),
             )
         else:
             raise ValueError(f"Unsupported meter of type {type(meter)}")
 
         return message
+
+    def _format_tags(self, meter_tags: Tags, verbose: bool = False) -> Tags | list[Tags]:
+        if verbose:
+            return [
+                {"name": name, "value": value}
+                for tags in [self.universal_tags, meter_tags]
+                for name, value in tags.items()
+            ]
+        else:
+            return {**self.universal_tags, **meter_tags}
