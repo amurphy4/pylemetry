@@ -13,8 +13,8 @@ Currently, three meters are supported, `Counter`, `Gauge`, and `Timer`
 
 ## Counter
 
-The counter meter allows you to keep track of the number of times a block of code is executed.
-A `Counter` can be created either directly
+The counter meter allows you to keep track of the number of times a block of code is executed. A `Counter` can be
+created either directly
 
 ```python
 from pylemetry.meters import Counter
@@ -56,11 +56,13 @@ def main() -> None:
     counter.get_value()  # 100
 ```
 
-When using this meter via a decorator, the meter gets added to the global `registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
+When using this meter via a decorator, the meter gets added to the global `registry`, with the method name it's
+decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
 
 ## Gauge
 
-A `Gauge` meter allows you to keep track of varying metrics, e.g. memory usage or items on a queue. This meter currently isn't supported as a decorator
+A `Gauge` meter allows you to keep track of varying metrics, e.g. memory usage or items on a queue. This meter currently
+isn't supported as a decorator
 
 ```python
 from pylemetry import registry
@@ -69,7 +71,7 @@ from pylemetry.meters import Gauge
 
 def some_method() -> None:
     gauge = Gauge("sample_gauge")
-    
+
     registry.add_gauge(gauge)
 ```
 
@@ -77,7 +79,6 @@ The `Gauge` supports incrementing, decrementing, and setting a value directly
 
 ```python
 from pylemetry import registry
-
 
 gauge = registry.get_gauge("sample_gauge")
 
@@ -144,9 +145,11 @@ def main() -> None:
     ...
 ```
 
-When using this meter via a decorator, the meter gets added to the global `registry`, with the method name it's decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
+When using this meter via a decorator, the meter gets added to the global `registry`, with the method name it's
+decorating as the meter name. Alternatively, you can provide a name for the meter as a parameter to the decorator
 
-By default, timer meters will measure time in nanoseconds, this can be changed via the `unit` parameter using the `TimerUnits` enum in the utils module
+By default, timer meters will measure time in nanoseconds, this can be changed via the `unit` parameter using the
+`TimerUnits` enum in the utils module
 
 ```python
 import time
@@ -154,13 +157,12 @@ import time
 from pylemetry.meters import Timer
 from pylemetry.utils import TimerUnits
 
-
 timer_s = Timer("example_s", TimerUnits.SECONDS)
 timer_ms = Timer("example_ms", TimerUnits.MILLISECONDS)
 
 with timer_s.time():
     time.sleep(1)
-    
+
 with timer_ms.time():
     time.sleep(1)
 
@@ -170,11 +172,13 @@ timer_ms.get_mean_tick_time()  # 1000
 
 ## Tags
 
-When creating a meter you can assign a set of tags to it as key-value pairs. The value must be one of either `str`, `int`, or `float`.
-When using a decorator to create a meter, you can use a custom format for the value to extract values out of the method's args and kwargs
+When creating a meter you can assign a set of tags to it as key-value pairs. The value must be one of either `str`,
+`int`, or `float`. When using a decorator to create a meter, you can use a custom format for the value to extract values
+out of the method's args and kwargs
 
-In order to allow for multiple meters with the same name and different tags, the name in the registry gets mangled with the tags to produce a unique name,
-as a result when trying to get the meter from the registry you will need to provide both its name and its tags.
+In order to allow for multiple meters with the same name and different tags, the name in the registry gets mangled with
+the tags to produce a unique name, as a result when trying to get the meter from the registry you will need to provide
+both its name and its tags.
 
 ```python
 from pylemetry import registry
@@ -195,13 +199,13 @@ def main() -> None:
 
 ## The Registry
 
-Pylemetry maintains a global registry of meters, allowing you to share a meter across multiple files, or reference metrics from a central location.
-This registry is also used to keep track of all metrics created by decorators, with those meters registered using the method name they are decorating
+Pylemetry maintains a global registry of meters, allowing you to share a meter across multiple files, or reference
+metrics from a central location. This registry is also used to keep track of all metrics created by decorators, with
+those meters registered using the method name they are decorating
 
 ```python
 from pylemetry import registry
 from pylemetry.meters import Counter, Gauge, Timer
-
 
 counter = Counter("example")
 gauge = Gauge("example")
@@ -212,13 +216,13 @@ registry.add_gauge(gauge)
 registry.add_timer(timer)
 ```
 
-Each meter type has an `add_meter`, `get_meter` and `remove_meter` method to manage meters in the `registry`, each requiring a unique meter name.
-There is also a base method for each of these methods, accepting an additional parameter of `MeterType`
+Each meter type has an `add_meter`, `get_meter` and `remove_meter` method to manage meters in the `registry`, each
+requiring a unique meter name. There is also a base method for each of these methods, accepting an additional parameter
+of `MeterType`
 
 ```python
 from pylemetry import registry
 from pylemetry.meters import Counter, MeterType
-
 
 counter = Counter("example")
 
@@ -232,9 +236,11 @@ The `registry` can be cleared through the `clear()` method
 
 ## Reporting
 
-Periodic reporting of all meters in the registry can be achieved using the `LoggingReporter`. This reporter periodically logs messages to a provided logger with a given message format and interval.
+Periodic reporting of all meters in the registry can be achieved using the `LoggingReporter`. This reporter periodically
+logs messages to a provided logger with a given message format and interval.
 
 ### Message Formatting
+
 The message format allows for substitutions for metric values with the following options
 
 | Substitution Key | Effect                                                                                                                                        |
@@ -246,35 +252,47 @@ The message format allows for substitutions for metric values with the following
 | max              | Maximum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `max_tick_time` for `Timer` meters       |
 | avg              | Mean average value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `mean_tick_time` for `Timer` meters |
 | type             | Type of the meter (`counter`, `gauge`, or `timer`)                                                                                            |
-| tags             | The tags associated with the meter                                                                                                            |
+| tags             | The tags associated with the meter in the format {<tag_name>: <tag_value>, <tag_name>: <tag_value>}                                           |
+| verbose_tags     | The tags associated with the meter as a list of objects in the format {"name": <tag_name>, "value": <tag_value>}                              |
 
 As an example, a `Counter` meter named `sample_counter` with a value of 10
+
 ```python
 message_format = "Meter: {name} - Value: {value}"
 ```
+
 This message format would evaluate to `Meter: sample_counter - Value: 10`
 
-It is possible to include braces `{}` in the message using the same rules as Python string formatting by doubling up the brace you want to escape.
+It is possible to include braces `{}` in the message using the same rules as Python string formatting by doubling up the
+brace you want to escape.
+
 ```python
 message_format = "{{'name': '{name}', 'value': {value}, 'extra': 'abc123'}}"
 ```
+
 This message format would evaluate to `{'name': 'sample_counter', 'value': 10, 'extra': 'abc123'}`
 
 ### LoggingReporter
 
-The `LoggingReporter` takes a provided logger, log level, message format, and interval, and logs formatted messages for all meters in the registry to the provided logger at the specified log level every `n` seconds where `n` is the provided interval.
+The `LoggingReporter` takes a provided logger, log level, message format, and interval, and logs formatted messages for
+all meters in the registry to the provided logger at the specified log level every `n` seconds where `n` is the provided
+interval.
 
-Any logger can be used with the `LoggingReporter` so long as it conforms to the `Loggable` protocol defined in `pylemetry.reporters.logging`. 
-The Python built in `logging` logger conforms to this, as do several alternate logging packages such as [Loguru](https://pypi.org/project/loguru/)
+Any logger can be used with the `LoggingReporter` so long as it conforms to the `Loggable` protocol defined in
+`pylemetry.reporters.logging`. The Python built in `logging` logger conforms to this, as do several alternate logging
+packages such as [Loguru](https://pypi.org/project/loguru/)
 
-An additional parameter `ReportingType` is required to determine whether to log cumulatively, or per interval.
-When `ReportingType.CUMULATIVE` is provided then all logs for all meters will include values for the meter's entire lifespan. 
-If `ReportingType.INTERVAL` is provided, all meters will log only the changes in that meter since the most recent interval was marked, either manually or by the most recent log flush
+An additional parameter `ReportingType` is required to determine whether to log cumulatively, or per interval. When
+`ReportingType.CUMULATIVE` is provided then all logs for all meters will include values for the meter's entire lifespan.
+If `ReportingType.INTERVAL` is provided, all meters will log only the changes in that meter since the most recent
+interval was marked, either manually or by the most recent log flush
 
-To configure message formats, use the `configure_message_formats` method, optionally providing a `MeterType` for the meters that this message format should apply to. 
-If no `MeterType` is provided, the message format will apply to all meters
+To configure message formats, use the `configure_message_formats` method, optionally providing a `MeterType` for the
+meters that this message format should apply to. If no `MeterType` is provided, the message format will apply to all
+meters
 
-As a `Reporter`, you can use `LoggingReporter` as a context manager to ensure that values are always flushed before exiting
+As a `Reporter`, you can use `LoggingReporter` as a context manager to ensure that values are always flushed before
+exiting
 
 ```python
 import logging
@@ -290,5 +308,5 @@ with LoggingReporter(10, logger, logging.INFO, ReportingType.CUMULATIVE) as repo
 ```
 
 When using a reporter as a context manager there is an additional optional parameter you can set,
-`clear_registry_on_exit` which is set to `False` by default. When set to `True`, this will
-clear the registry (via `registry.clear()`) when the context manager exits
+`clear_registry_on_exit` which is set to `False` by default. When set to `True`, this will clear the registry (via
+`registry.clear()`) when the context manager exits

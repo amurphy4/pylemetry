@@ -5,6 +5,7 @@ from pylemetry import registry
 from pylemetry.meters import MeterType
 from pylemetry.reporting.reporter import Reporter
 from pylemetry.reporting.reporting_type import ReportingType
+from pylemetry.utils.types import Tags
 
 
 class Loggable(Protocol):
@@ -27,7 +28,7 @@ class LoggingReporter(Reporter):
         level: int,
         _type: ReportingType,
         clear_registry_on_exit: bool = False,
-        universal_tags: dict[str, str | int | float] | None = None,
+        universal_tags: Tags | None = None,
     ) -> None:
         super().__init__(interval, clear_registry_on_exit, universal_tags)
 
