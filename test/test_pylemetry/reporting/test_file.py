@@ -150,6 +150,28 @@ def test_file_reporter_json_multiple_meters_output_to_file(temp_file: Path) -> N
         }
 
 
+def test_file_reporter_csv_multiple_meters_output_to_file(temp_file: Path) -> None:
+    counter = Counter("test_counter", {"tag1": "value1", "tag2": "value2"})
+    counter += 1
+
+    counter_2 = Counter("test_counter_2", {"tag1": "value1", "tag2": "value2"})
+    counter_2 += 10
+
+    registry.add_counter(counter)
+    registry.add_counter(counter_2)
+
+    reporter = FileReporter(10, temp_file, ReportingType.CUMULATIVE, file_type=FileType.CSV)
+    reporter.flush()
+
+    with open(temp_file, encoding="utf-8") as file:
+        reader = csv.reader(file)
+
+        lines = list(reader)
+
+        assert lines[0] == ["test_counter", "counter", "1.0", "{'tag1': 'value1', 'tag2': 'value2'}"]
+        assert lines[1] == ["test_counter_2", "counter", "10.0", "{'tag1': 'value1', 'tag2': 'value2'}"]
+
+
 def test_file_reporter_text_multiple_meters_output_to_file(temp_file: Path) -> None:
     counter = Counter("test_counter", {"tag1": "value1", "tag2": "value2"})
     counter += 1
