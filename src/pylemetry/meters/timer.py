@@ -4,6 +4,7 @@ from contextlib import contextmanager
 
 from pylemetry.meters.meter import Meter, MeterType
 from pylemetry.utils import TimerUnits
+from pylemetry.utils.types import Tags
 
 
 class Timer(Meter):
@@ -134,3 +135,15 @@ class Timer(Meter):
 
         with self.lock:
             self.last_interval_value = len(self.ticks)
+
+    def to_dict(self, since_last_interval: bool = False) -> dict[str, str | int | float | Tags | list[Tags]]:
+        return {
+            "name": self.name,
+            "type": self.meter_type,
+            "unit": self.unit.value,
+            "value": self.get_value(since_last_interval),
+            "count": self.get_count(since_last_interval),
+            "min": self.get_min_tick_time(since_last_interval),
+            "max": self.get_max_tick_time(since_last_interval),
+            "avg": self.get_mean_tick_time(since_last_interval),
+        }

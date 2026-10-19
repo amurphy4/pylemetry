@@ -1,10 +1,10 @@
-from enum import Enum
+from enum import StrEnum
 from threading import Lock
 
 from pylemetry.utils.types import Tags
 
 
-class MeterType(Enum):
+class MeterType(StrEnum):
     COUNTER = "counter"
     GAUGE = "gauge"
     TIMER = "timer"
@@ -47,3 +47,10 @@ class Meter:
 
     def get_tags(self) -> Tags:
         return self._tags
+
+    def to_dict(self, since_last_interval: bool = False) -> dict[str, str | int | float | Tags | list[Tags]]:
+        return {
+            "name": self.name,
+            "type": self.meter_type,
+            "value": self.get_value(since_last_interval),
+        }
