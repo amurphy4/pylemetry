@@ -57,7 +57,7 @@ class FileReporter(Reporter):
 
     def _flush_csv(self, file: TextIO, meter: Meter) -> None:
         data = meter.to_dict()
-        data["tags"] = json.dumps(self._format_tags(meter.get_tags()))
+        data["tags"] = self._format_tags(meter.get_tags())
 
         csv.writer(file).writerow(data.values())
 

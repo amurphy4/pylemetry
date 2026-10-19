@@ -20,7 +20,7 @@ def temp_file() -> Generator[Path, None, None]:
 
 
 def test_file_reporter_json_counter(temp_file: Path) -> None:
-    counter = Counter("test_counter")
+    counter = Counter("test_counter", {"tag1": "value1", "tag2": "value2"})
     counter += 1
 
     registry.add_counter(counter)
@@ -31,11 +31,16 @@ def test_file_reporter_json_counter(temp_file: Path) -> None:
     with open(temp_file, encoding="utf-8") as file:
         data = json.loads(file.read())
 
-        assert data == {"name": "test_counter", "value": 1, "type": "counter", "tags": {}}
+        assert data == {
+            "name": "test_counter",
+            "value": 1,
+            "type": "counter",
+            "tags": {"tag1": "value1", "tag2": "value2"},
+        }
 
 
 def test_file_reporter_json_timer(temp_file: Path) -> None:
-    timer = Timer("test_timer")
+    timer = Timer("test_timer", tags={"tag1": "value1", "tag2": "value2"})
 
     registry.add_timer(timer)
 
@@ -50,7 +55,7 @@ def test_file_reporter_json_timer(temp_file: Path) -> None:
             "count": 0,
             "type": "timer",
             "unit": "nanoseconds",
-            "tags": {},
+            "tags": {"tag1": "value1", "tag2": "value2"},
             "value": 0,
             "min": 0,
             "max": 0,
@@ -59,7 +64,7 @@ def test_file_reporter_json_timer(temp_file: Path) -> None:
 
 
 def test_file_reporter_csv_counter(temp_file: Path) -> None:
-    counter = Counter("test_counter")
+    counter = Counter("test_counter", {"tag1": "value1", "tag2": "value2"})
     counter += 1
 
     registry.add_counter(counter)
@@ -71,11 +76,11 @@ def test_file_reporter_csv_counter(temp_file: Path) -> None:
         reader = csv.reader(file)
 
         for row in reader:
-            assert row == ["test_counter", "counter", "1.0", "{}"]
+            assert row == ["test_counter", "counter", "1.0", "{'tag1': 'value1', 'tag2': 'value2'}"]
 
 
 def test_file_reporter_csv_timer(temp_file: Path) -> None:
-    timer = Timer("test_timer")
+    timer = Timer("test_timer", tags={"tag1": "value1", "tag2": "value2"})
 
     registry.add_timer(timer)
 
@@ -86,11 +91,21 @@ def test_file_reporter_csv_timer(temp_file: Path) -> None:
         reader = csv.reader(file)
 
         for row in reader:
-            assert row == ["test_timer", "timer", "nanoseconds", "0", "0", "0", "0", "0", "{}"]
+            assert row == [
+                "test_timer",
+                "timer",
+                "nanoseconds",
+                "0",
+                "0",
+                "0",
+                "0",
+                "0",
+                "{'tag1': 'value1', 'tag2': 'value2'}",
+            ]
 
 
 def test_file_reporter_text(temp_file: Path) -> None:
-    counter = Counter("test_counter")
+    counter = Counter("test_counter", {"tag1": "value1", "tag2": "value2"})
     counter += 1
 
     registry.add_counter(counter)
@@ -103,10 +118,10 @@ def test_file_reporter_text(temp_file: Path) -> None:
 
 
 def test_file_reporter_json_multiple_meters_output_to_file(temp_file: Path) -> None:
-    counter = Counter("test_counter")
+    counter = Counter("test_counter", {"tag1": "value1", "tag2": "value2"})
     counter += 1
 
-    counter_2 = Counter("test_counter_2")
+    counter_2 = Counter("test_counter_2", {"tag1": "value1", "tag2": "value2"})
     counter_2 += 10
 
     registry.add_counter(counter)
@@ -121,15 +136,25 @@ def test_file_reporter_json_multiple_meters_output_to_file(temp_file: Path) -> N
         counter_data = json.loads(lines[0])
         counter_2_data = json.loads(lines[1])
 
-        assert counter_data == {"name": "test_counter", "value": 1, "type": "counter", "tags": {}}
-        assert counter_2_data == {"name": "test_counter_2", "value": 10, "type": "counter", "tags": {}}
+        assert counter_data == {
+            "name": "test_counter",
+            "value": 1,
+            "type": "counter",
+            "tags": {"tag1": "value1", "tag2": "value2"},
+        }
+        assert counter_2_data == {
+            "name": "test_counter_2",
+            "value": 10,
+            "type": "counter",
+            "tags": {"tag1": "value1", "tag2": "value2"},
+        }
 
 
 def test_file_reporter_text_multiple_meters_output_to_file(temp_file: Path) -> None:
-    counter = Counter("test_counter")
+    counter = Counter("test_counter", {"tag1": "value1", "tag2": "value2"})
     counter += 1
 
-    counter_2 = Counter("test_counter_2")
+    counter_2 = Counter("test_counter_2", {"tag1": "value1", "tag2": "value2"})
     counter_2 += 10
 
     registry.add_counter(counter)
