@@ -143,11 +143,11 @@ def test_message_format_with_universal_tags() -> None:
 
 
 def test_message_format_with_verbose_tags() -> None:
-    message_format = "{{'name': '{name}', 'tags': {verbose_tags}}}"
+    message_format = "{{'name': '{name}', 'tags': {tags}}}"
 
     timer = Timer("test_timer", tags={"tag_1": "value", "tag_2": 2, "tag_3": 1.5})
 
-    message = Reporter(1.0).format_message(message_format, timer, False)
+    message = Reporter(1.0, verbose_tags=True).format_message(message_format, timer, False)
 
     assert (
         message
@@ -157,11 +157,13 @@ def test_message_format_with_verbose_tags() -> None:
 
 
 def test_message_format_with_verbose_universal_tags() -> None:
-    message_format = "{{'name': '{name}', 'tags': {verbose_tags}}}"
+    message_format = "{{'name': '{name}', 'tags': {tags}}}"
 
     timer = Timer("test_timer", tags={"tag_2": 2, "tag_3": 1.5})
 
-    message = Reporter(1.0, universal_tags={"tag_1": "value"}).format_message(message_format, timer, False)
+    message = Reporter(1.0, universal_tags={"tag_1": "value"}, verbose_tags=True).format_message(
+        message_format, timer, False
+    )
 
     assert (
         message

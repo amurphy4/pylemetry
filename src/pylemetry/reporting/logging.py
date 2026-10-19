@@ -2,7 +2,6 @@ import logging
 from typing import Protocol
 
 from pylemetry import registry
-from pylemetry.meters import MeterType
 from pylemetry.reporting.reporter import Reporter
 from pylemetry.reporting.reporting_type import ReportingType
 from pylemetry.utils.types import Tags
@@ -26,39 +25,24 @@ class LoggingReporter(Reporter):
         interval: float,
         logger: Loggable,
         level: int,
-        _type: ReportingType,
+        reporting_type: ReportingType,
         clear_registry_on_exit: bool = False,
         universal_tags: Tags | None = None,
+        verbose_tags: bool = False,
     ) -> None:
-        super().__init__(interval, clear_registry_on_exit, universal_tags)
+        super().__init__(interval, reporting_type, clear_registry_on_exit, universal_tags, verbose_tags)
 
         self.logger = logger
         self.level = level
-        self._type = _type
-
-        self.message_formats = {
-            MeterType.COUNTER: "{name} [{type}] -- {value}",
-            MeterType.GAUGE: "{name} [{type}] -- {value}",
-            MeterType.TIMER: "{name} [{type}] -- {value}",
-        }
-
-    def configure_message_format(self, message_format: str, meter_type: MeterType | None = None) -> None:
-        if not meter_type:
-            for _type in list(MeterType):
-                self.message_formats[_type] = message_format
-        else:
-            self.message_formats[meter_type] = message_format
 
     def flush(self) -> None:
-        since_last_interval = self._type == ReportingType.INTERVAL
-
         for _, meters in registry.METERS.items():
             for _, meter in meters.items():
                 self._log(
-                    self.format_message(self.message_formats[meter.meter_type], meter, since_last_interval),
+                    self.format_message(self.message_formats[meter.meter_type], meter, self.since_last_interval),
                 )
 
-                if since_last_interval:
+                if self.since_last_interval:
                     meter.mark_interval()
 
     def _log(self, message: str) -> None:
