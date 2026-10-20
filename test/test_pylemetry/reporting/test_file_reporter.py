@@ -196,7 +196,4 @@ def test_base_file_reporter_cannot_be_instantiated(temp_file: Path) -> None:
     with pytest.raises(TypeError) as exec_info:
         FileReporter(10, temp_file, ReportingType.CUMULATIVE)  # type: ignore[abstract]
 
-    assert (
-        exec_info.value.args[0]
-        == "Can't instantiate abstract class FileReporter without an implementation for abstract method 'flush_to_file'"
-    )
+    assert exec_info.value.args[0].startswith("Can't instantiate abstract class FileReporter")

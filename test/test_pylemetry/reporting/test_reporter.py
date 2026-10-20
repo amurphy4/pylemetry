@@ -29,9 +29,10 @@ def temp_file() -> Generator[Path, None, None]:
 
 
 def test_reporter_base_class_cant_flush() -> None:
-    with pytest.raises(TypeError):
-        reporter = Reporter(1)  # type: ignore[abstract]
-        reporter.flush()
+    with pytest.raises(TypeError) as exec_info:
+        Reporter(1)  # type: ignore[abstract]
+
+    assert exec_info.value.args[0].startswith("Can't instantiate abstract class Reporter")
 
 
 def test_logging_reporter_flushing_on_timer(caplog: LogCaptureFixture) -> None:
