@@ -7,7 +7,7 @@ import pytest
 
 from pylemetry import registry
 from pylemetry.meters import Counter, Timer
-from pylemetry.reporting import FileReporter, FileType, ReportingType
+from pylemetry.reporting import CSVFileReporter, FileReporter, JSONFileReporter, ReportingType, TextFileReporter
 
 
 @pytest.fixture(scope="function")
@@ -25,7 +25,7 @@ def test_file_reporter_json_counter(temp_file: Path) -> None:
 
     registry.add_counter(counter)
 
-    reporter = FileReporter(10, temp_file, ReportingType.CUMULATIVE)
+    reporter = JSONFileReporter(10, temp_file, ReportingType.CUMULATIVE)
     reporter.flush()
 
     with open(temp_file, encoding="utf-8") as file:
@@ -44,7 +44,7 @@ def test_file_reporter_json_timer(temp_file: Path) -> None:
 
     registry.add_timer(timer)
 
-    reporter = FileReporter(10, temp_file, ReportingType.CUMULATIVE)
+    reporter = JSONFileReporter(10, temp_file, ReportingType.CUMULATIVE)
     reporter.flush()
 
     with open(temp_file, encoding="utf-8") as file:
@@ -69,7 +69,7 @@ def test_file_reporter_csv_counter(temp_file: Path) -> None:
 
     registry.add_counter(counter)
 
-    reporter = FileReporter(10, temp_file, ReportingType.CUMULATIVE, file_type=FileType.CSV)
+    reporter = CSVFileReporter(10, temp_file, ReportingType.CUMULATIVE)
     reporter.flush()
 
     with open(temp_file, encoding="utf-8") as file:
@@ -84,7 +84,7 @@ def test_file_reporter_csv_timer(temp_file: Path) -> None:
 
     registry.add_timer(timer)
 
-    reporter = FileReporter(10, temp_file, ReportingType.CUMULATIVE, file_type=FileType.CSV)
+    reporter = CSVFileReporter(10, temp_file, ReportingType.CUMULATIVE)
     reporter.flush()
 
     with open(temp_file, encoding="utf-8") as file:
@@ -110,7 +110,7 @@ def test_file_reporter_text(temp_file: Path) -> None:
 
     registry.add_counter(counter)
 
-    reporter = FileReporter(10, temp_file, ReportingType.CUMULATIVE, file_type=FileType.TEXT)
+    reporter = TextFileReporter(10, temp_file, ReportingType.CUMULATIVE)
     reporter.flush()
 
     with open(temp_file, encoding="utf-8") as file:
@@ -127,7 +127,7 @@ def test_file_reporter_json_multiple_meters_output_to_file(temp_file: Path) -> N
     registry.add_counter(counter)
     registry.add_counter(counter_2)
 
-    reporter = FileReporter(10, temp_file, ReportingType.CUMULATIVE)
+    reporter = JSONFileReporter(10, temp_file, ReportingType.CUMULATIVE)
     reporter.flush()
 
     with open(temp_file, encoding="utf-8") as file:
@@ -160,7 +160,7 @@ def test_file_reporter_csv_multiple_meters_output_to_file(temp_file: Path) -> No
     registry.add_counter(counter)
     registry.add_counter(counter_2)
 
-    reporter = FileReporter(10, temp_file, ReportingType.CUMULATIVE, file_type=FileType.CSV)
+    reporter = CSVFileReporter(10, temp_file, ReportingType.CUMULATIVE)
     reporter.flush()
 
     with open(temp_file, encoding="utf-8") as file:
@@ -182,7 +182,7 @@ def test_file_reporter_text_multiple_meters_output_to_file(temp_file: Path) -> N
     registry.add_counter(counter)
     registry.add_counter(counter_2)
 
-    reporter = FileReporter(10, temp_file, ReportingType.CUMULATIVE, file_type=FileType.TEXT)
+    reporter = TextFileReporter(10, temp_file, ReportingType.CUMULATIVE)
     reporter.flush()
 
     with open(temp_file, encoding="utf-8") as file:
@@ -190,3 +190,13 @@ def test_file_reporter_text_multiple_meters_output_to_file(temp_file: Path) -> N
 
         assert lines[0] == "test_counter [counter] -- 1.0\n"
         assert lines[1] == "test_counter_2 [counter] -- 10.0\n"
+
+
+def test_base_file_reporter_cannot_be_instantiated(temp_file: Path) -> None:
+    with pytest.raises(TypeError) as exec_info:
+        FileReporter(10, temp_file, ReportingType.CUMULATIVE)  # type: ignore[abstract]
+
+    assert (
+        exec_info.value.args[0]
+        == "Can't instantiate abstract class FileReporter without an implementation for abstract method 'flush_to_file'"
+    )

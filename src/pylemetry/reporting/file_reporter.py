@@ -1,6 +1,6 @@
 import csv
 import json
-from enum import StrEnum
+from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import TextIO
 
@@ -11,19 +11,12 @@ from pylemetry.reporting.reporting_type import ReportingType
 from pylemetry.utils.types import Tags
 
 
-class FileType(StrEnum):
-    JSON = "json"
-    CSV = "csv"
-    TEXT = "txt"
-
-
-class FileReporter(Reporter):
+class FileReporter(Reporter, ABC):
     def __init__(
         self,
         interval: float,
         file_path: str | Path,
         reporting_type: ReportingType,
-        file_type: FileType = FileType.JSON,
         clear_registry_on_exit: bool = False,
         universal_tags: Tags | None = None,
         verbose_tags: bool = False,
@@ -32,34 +25,36 @@ class FileReporter(Reporter):
 
         self.file_path = file_path
         self.reporting_type = reporting_type
-        self.file_type = file_type
 
     def flush(self) -> None:
         with open(self.file_path, "a", encoding="utf-8") as file:
             for _, meters in registry.METERS.items():
                 for _, meter in meters.items():
-                    match self.file_type:
-                        case FileType.JSON:
-                            self._flush_json(file, meter)
-                        case FileType.CSV:
-                            self._flush_csv(file, meter)
-                        case FileType.TEXT:
-                            self._flush_text(file, meter)
+                    self.flush_to_file(file, meter)
 
                     if self.since_last_interval:
                         meter.mark_interval()
 
-    def _flush_json(self, file: TextIO, meter: Meter) -> None:
+    @abstractmethod
+    def flush_to_file(self, file: TextIO, meter: Meter) -> None: ...
+
+
+class JSONFileReporter(FileReporter):
+    def flush_to_file(self, file: TextIO, meter: Meter) -> None:
         data = meter.to_dict()
         data["tags"] = self._format_tags(meter.get_tags(), verbose=self.verbose_tags)
 
         file.write(json.dumps(data) + "\n")
 
-    def _flush_csv(self, file: TextIO, meter: Meter) -> None:
+
+class CSVFileReporter(FileReporter):
+    def flush_to_file(self, file: TextIO, meter: Meter) -> None:
         data = meter.to_dict()
         data["tags"] = self._format_tags(meter.get_tags())
 
         csv.writer(file).writerow(data.values())
 
-    def _flush_text(self, file: TextIO, meter: Meter) -> None:
+
+class TextFileReporter(FileReporter):
+    def flush_to_file(self, file: TextIO, meter: Meter) -> None:
         file.write(self.format_message(self.message_formats[meter.meter_type], meter, self.since_last_interval) + "\n")
