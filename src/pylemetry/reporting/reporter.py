@@ -1,4 +1,5 @@
 import threading
+from abc import ABC, abstractmethod
 from types import TracebackType
 from typing import Self
 
@@ -8,7 +9,7 @@ from pylemetry.reporting.reporting_type import ReportingType
 from pylemetry.utils.types import Tags
 
 
-class Reporter:
+class Reporter(ABC):
     def __init__(
         self,
         interval: float,
@@ -49,13 +50,13 @@ class Reporter:
         if self.clear_registry_on_exit:
             registry.clear()
 
+    @abstractmethod
     def flush(self) -> None:
         """
         Flush all meter values in the registry. If the reporter is configured using `ReporterType.INTERVAL`, this will
         mark an interval each time it runs and only flush the meter values since the most recent interval
         """
-
-        raise NotImplementedError()
+        ...
 
     def _run(self) -> None:
         self.running = False
