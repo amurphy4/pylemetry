@@ -1,3 +1,5 @@
+from pylemetry.meters import Meterfrom typing import TextIO
+
 # Pylemetry
 
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
@@ -317,4 +319,28 @@ of providing a logger to log to, you provide a file path and a file type for the
 to be added to. The file provided is always opened in append mode to ensure that data
 can only ever be added.
 
-Three file types are supported - JSON, CSV, and text
+The `FileReporter` class is an abstract base class, with 3 implementations
+- `CSVFileReporter` - Writes data to the output file in CSV format
+- `JSONFileReporter` - Writes data to the output file in JSON format
+- `TextFileReporter` - Writes data to the output file using the same message format as the `LoggingReporter` uses
+
+The `FileReporter` behaviour is extensible to other file types by creating a new class inheriting the `FileReporter`
+and implementing the `flush_to_file(...)` method. E.g.
+
+```python
+from typing import TextIO
+
+from pylemetry.meters import Meter
+from pylemetry.reporting import FileReporter
+
+
+class SomeFileReporter(FileReporter):
+    def flush_to_file(self, file: TextIO, meter: Meter) -> None:
+        data = meter.to_dict()
+        data["tags"] = self._format_tags(meter.get_tags())
+
+        # Processing of meter data
+        ...
+        
+        file.write(data)
+```
