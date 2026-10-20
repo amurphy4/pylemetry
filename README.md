@@ -243,17 +243,16 @@ logs messages to a provided logger with a given message format and interval.
 
 The message format allows for substitutions for metric values with the following options
 
-| Substitution Key | Effect                                                                                                                                        |
-|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| name             | Name of the meter being logged                                                                                                                |
-| value            | Value of the meter, `value` for `Counter` and `Gauge` meters, sum of all ticks for `Timer` meters                                             |
-| count            | Value of the meter for `Counter` and `Gauge` meters, number of ticks for `Timer` meters                                                       |
-| min              | Minimum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `min_tick_time` for `Timer` meters       |
-| max              | Maximum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `max_tick_time` for `Timer` meters       |
-| avg              | Mean average value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `mean_tick_time` for `Timer` meters |
-| type             | Type of the meter (`counter`, `gauge`, or `timer`)                                                                                            |
-| tags             | The tags associated with the meter in the format {<tag_name>: <tag_value>, <tag_name>: <tag_value>}                                           |
-| verbose_tags     | The tags associated with the meter as a list of objects in the format {"name": <tag_name>, "value": <tag_value>}                              |
+| Substitution Key | Effect                                                                                                                                                |
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
+| name             | Name of the meter being logged                                                                                                                        |
+| value            | Value of the meter, `value` for `Counter` and `Gauge` meters, sum of all ticks for `Timer` meters                                                     |
+| count            | Value of the meter for `Counter` and `Gauge` meters, number of ticks for `Timer` meters                                                               |
+| min              | Minimum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `min_tick_time` for `Timer` meters               |
+| max              | Maximum value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `max_tick_time` for `Timer` meters               |
+| avg              | Mean average value of the meter, equivalent to the `value` substitution for `Counter` and `Gauge` meters, `mean_tick_time` for `Timer` meters         |
+| type             | Type of the meter (`counter`, `gauge`, or `timer`)                                                                                                    |
+| tags             | The tags associated with the meter in the format {<tag_name>: <tag_value>, <tag_name>: <tag_value>} unless `verbose_tags=True` is set on the reporter |
 
 As an example, a `Counter` meter named `sample_counter` with a value of 10
 
@@ -272,7 +271,7 @@ message_format = "{{'name': '{name}', 'value': {value}, 'extra': 'abc123'}}"
 
 This message format would evaluate to `{'name': 'sample_counter', 'value': 10, 'extra': 'abc123'}`
 
-### LoggingReporter
+### `LoggingReporter`
 
 The `LoggingReporter` takes a provided logger, log level, message format, and interval, and logs formatted messages for
 all meters in the registry to the provided logger at the specified log level every `n` seconds where `n` is the provided
@@ -310,3 +309,12 @@ with LoggingReporter(10, logger, logging.INFO, ReportingType.CUMULATIVE) as repo
 When using a reporter as a context manager there is an additional optional parameter you can set,
 `clear_registry_on_exit` which is set to `False` by default. When set to `True`, this will clear the registry (via
 `registry.clear()`) when the context manager exits
+
+### `FileReporter`
+
+The `FileReporter` works the same way as the `LoggingReporter`, however instead
+of providing a logger to log to, you provide a file path and a file type for the metrics
+to be added to. The file provided is always opened in append mode to ensure that data
+can only ever be added.
+
+Three file types are supported - JSON, CSV, and text
