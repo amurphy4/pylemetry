@@ -278,7 +278,7 @@ all meters in the registry to the provided logger at the specified log level eve
 interval.
 
 Any logger can be used with the `LoggingReporter` so long as it conforms to the `Loggable` protocol defined in
-`pylemetry.reporters.logging`. The Python built in `logging` logger conforms to this, as do several alternate logging
+`pylemetry.reporters.logging_reporter`. The Python built in `logging` logger conforms to this, as do several alternate logging
 packages such as [Loguru](https://pypi.org/project/loguru/)
 
 An additional parameter `ReportingType` is required to determine whether to log cumulatively, or per interval. When
