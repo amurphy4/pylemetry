@@ -23,6 +23,11 @@ from pylemetry.reporting import (
 def temp_file() -> Generator[Path, None, None]:
     file = Path(__file__).parent / "temp_file"
 
+    with open(file, "w") as _:
+        # Open the file in read mode to ensure it's empty. Resolves an occasional problem where the file doesn't get
+        # unlinked properly between tests
+        pass
+
     yield file
 
     file.unlink(missing_ok=True)
