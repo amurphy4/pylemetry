@@ -84,6 +84,9 @@ description = "Run lint checks"
 runner = "uv-venv-lock-runner"
 commands = [["ruff", "check"]]
 
+[tool.uv]
+required-version = ">=0.13.5"
+
 [[tool.uv.index]]
 name = "pypi"
 url = "https://pypi.org/simple"
