@@ -1,20 +1,26 @@
 import threading
+from abc import ABC, abstractmethod
 from types import TracebackType
 from typing import Self
 
 from pylemetry import registry
-from pylemetry.meters import Counter, Gauge, Meter, Timer
+from pylemetry.meters import Counter, Gauge, Meter, MeterType, Timer
+from pylemetry.reporting.reporting_type import ReportingType
 from pylemetry.utils.types import Tags
 
 
-class Reporter:
+class Reporter(ABC):
     def __init__(
         self,
         interval: float,
+        reporting_type: ReportingType = ReportingType.INTERVAL,
         clear_registry_on_exit: bool = False,
         universal_tags: Tags | None = None,
+        verbose_tags: bool = False,
     ) -> None:
         self.interval = interval
+        self.reporting_type = reporting_type
+        self.since_last_interval = self.reporting_type == ReportingType.INTERVAL
         self.__timer_thread: threading.Timer | None = None
         self.running = False
         self.clear_registry_on_exit = clear_registry_on_exit
@@ -23,6 +29,13 @@ class Reporter:
             universal_tags = {}
 
         self.universal_tags = universal_tags
+        self.verbose_tags = verbose_tags
+
+        self.message_formats = {
+            MeterType.COUNTER: "{name} [{type}] -- {value}",
+            MeterType.GAUGE: "{name} [{type}] -- {value}",
+            MeterType.TIMER: "{name} [{type}] -- {value}",
+        }
 
     def __enter__(self) -> Self:
         self.start()
@@ -37,13 +50,13 @@ class Reporter:
         if self.clear_registry_on_exit:
             registry.clear()
 
+    @abstractmethod
     def flush(self) -> None:
         """
         Flush all meter values in the registry. If the reporter is configured using `ReporterType.INTERVAL`, this will
         mark an interval each time it runs and only flush the meter values since the most recent interval
         """
-
-        raise NotImplementedError()
+        ...
 
     def _run(self) -> None:
         self.running = False
@@ -71,6 +84,13 @@ class Reporter:
         self.flush()
         self.running = False
 
+    def configure_message_format(self, message_format: str, meter_type: MeterType | None = None) -> None:
+        if not meter_type:
+            for _type in list(MeterType):
+                self.message_formats[_type] = message_format
+        else:
+            self.message_formats[meter_type] = message_format
+
     def format_message(self, message_format: str, meter: Meter, since_last_interval: bool = False) -> str:
         """
         Format output messages with the following format options:
@@ -97,9 +117,8 @@ class Reporter:
                 min=meter.get_min_tick_time(since_last_interval),
                 max=meter.get_max_tick_time(since_last_interval),
                 avg=meter.get_mean_tick_time(since_last_interval),
-                type=meter.meter_type.value,
-                tags=self._format_tags(meter.get_tags()),
-                verbose_tags=self._format_tags(meter.get_tags(), verbose=True),
+                type=meter.meter_type,
+                tags=self._format_tags(meter.get_tags(), verbose=self.verbose_tags),
             )
         elif isinstance(meter, Counter) or isinstance(meter, Gauge):
             message = message_format.format(
@@ -109,9 +128,8 @@ class Reporter:
                 min=meter.get_value(since_last_interval),
                 max=meter.get_value(since_last_interval),
                 avg=meter.get_value(since_last_interval),
-                type=meter.meter_type.value,
-                tags=self._format_tags(meter.get_tags()),
-                verbose_tags=self._format_tags(meter.get_tags(), verbose=True),
+                type=meter.meter_type,
+                tags=self._format_tags(meter.get_tags(), verbose=self.verbose_tags),
             )
         else:
             raise ValueError(f"Unsupported meter of type {type(meter)}")
